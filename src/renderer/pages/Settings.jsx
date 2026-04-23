@@ -27,14 +27,17 @@ export default function Settings({ onBack }) {
   }, [])
 
   const patch = useCallback((update) => {
-    setSite((prev) => ({ ...prev, ...update }))
-    setSaving(true)
-    clearTimeout(saveTimer.current)
-    saveTimer.current = setTimeout(async () => {
-      await window.api?.site.save({ ...site, ...update })
-      setSaving(false)
-    }, 600)
-  }, [site])
+    setSite((prev) => {
+      const next = { ...prev, ...update }
+      setSaving(true)
+      clearTimeout(saveTimer.current)
+      saveTimer.current = setTimeout(async () => {
+        await window.api?.site.save(next)
+        setSaving(false)
+      }, 600)
+      return next
+    })
+  }, [])
 
   return (
     <div className={s.container}>

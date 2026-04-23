@@ -5,20 +5,6 @@ import Btn from '../components/Btn'
 import Icon from '../components/Icon'
 import Spinner from '../components/Spinner'
 
-// macOS traffic lights placeholder (they're rendered by the OS in hiddenInset mode,
-// but we need the 76px left padding zone in the titlebar).
-function TrafficLights() {
-  return (
-    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      {['#ff5f57', '#febc2e', '#28c840'].map((bg) => (
-        <div key={bg} style={{
-          width: 12, height: 12, borderRadius: '50%', background: bg,
-          boxShadow: 'inset 0 0 0 0.5px rgba(0,0,0,.25)',
-        }} />
-      ))}
-    </div>
-  )
-}
 
 export default function Onboarding({ onDone }) {
   const [step, setStep]       = useState('login')
@@ -88,9 +74,7 @@ export default function Onboarding({ onDone }) {
 
   return (
     <div className={s.container}>
-      <div className={s.titlebar}>
-        <TrafficLights />
-      </div>
+      <div className={s.titlebar} />
 
       <div className={s.card}>
         <div style={{ width: 420, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

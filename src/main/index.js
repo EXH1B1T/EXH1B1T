@@ -1,6 +1,7 @@
-const { app, BrowserWindow, shell, protocol, net } = require('electron')
+const { app, BrowserWindow, shell, protocol, net, session } = require('electron')
 const { autoUpdater } = require('electron-updater')
 const path = require('path')
+const { pathToFileURL } = require('url')
 const { setupIpcHandlers } = require('./ipc')
 const { ensureAppDirs } = require('./storage')
 
@@ -49,10 +50,22 @@ function createWindow() {
 
 app.whenReady().then(async () => {
   // Serve local file paths as local:///<absolute-path>
-  protocol.handle('local', (request) => {
-    const filePath = request.url.slice('local://'.length)
-    return net.fetch(`file://${filePath}`)
+  // Chromium parses standard-scheme URLs host-based, so local:///Users/foo becomes
+  // local://users/foo (hostname=users, pathname=/foo). Reconstruct the absolute path.
+  const localHandler = (request) => {
+    const url = new URL(request.url)
+    const filePath = `/${url.hostname}${decodeURIComponent(url.pathname)}`
+    return net.fetch(pathToFileURL(filePath).href)
+  }
+  protocol.handle('local', localHandler)
+
+  // Register the same local:// handler on the preview webview's session so
+  // built preview HTML can load local photos via local:// URLs.
+  app.on('session-created', (sess) => {
+    if (sess.persist) sess.protocol.handle('local', localHandler)
   })
+  // Also register on persist:preview in case it was already created.
+  session.fromPartition('persist:preview').protocol.handle('local', localHandler)
 
   await ensureAppDirs()
   setupIpcHandlers()

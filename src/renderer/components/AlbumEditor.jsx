@@ -38,6 +38,15 @@ export default function AlbumEditor({ album, onSaved }) {
     onSaved?.()
   }
 
+  const handleUpdatePhoto = async (filename, data) => {
+    await window.api?.photos.update(album.slug, filename, data)
+  }
+
+  const handleReorderPhotos = async (filenames) => {
+    await window.api?.photos.reorder(album.slug, filenames)
+    onSaved?.()
+  }
+
   const handleUploaded = () => onSaved?.()
 
   return (
@@ -88,8 +97,11 @@ export default function AlbumEditor({ album, onSaved }) {
             <PhotoGrid
               photos={album.photos}
               coverFilename={album.coverPhoto}
+              albumSlug={album.slug}
               onSetCover={handleSetCover}
               onDelete={handleDeletePhoto}
+              onPhotoUpdate={handleUpdatePhoto}
+              onReorder={handleReorderPhotos}
             />
           </>
         )}

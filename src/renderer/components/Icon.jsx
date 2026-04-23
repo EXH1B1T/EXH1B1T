@@ -22,6 +22,8 @@ export default function Icon({ name, size = 14, color = 'currentColor', strokeWi
     case 'cloud':    return <svg {...common}><path d="M6 14a3 3 0 010-6 4 4 0 017.7-1A3 3 0 0114 14H6z" {...p}/></svg>
     case 'dots':     return <svg {...common}><circle cx="5" cy="10" r="1" fill={color}/><circle cx="10" cy="10" r="1" fill={color}/><circle cx="15" cy="10" r="1" fill={color}/></svg>
     case 'github':   return <svg {...common}><path d="M10 2a8 8 0 00-2.5 15.6c.4.1.5-.2.5-.4v-1.4c-2.2.5-2.7-1-2.7-1-.4-.9-.9-1.1-.9-1.1-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.2 1.9.9 2.4.7.1-.5.3-.9.5-1.1-1.7-.2-3.5-.9-3.5-4 0-.9.3-1.6.8-2.1-.1-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8a7.5 7.5 0 014 0c1.5-1 2.2-.8 2.2-.8.5 1.1.2 1.9.1 2.1.5.5.8 1.2.8 2.1 0 3-1.8 3.7-3.5 3.9.3.2.5.7.5 1.4v2.1c0 .2.1.5.5.4A8 8 0 0010 2z" fill={color}/></svg>
+    case 'pencil':   return <svg {...common}><path d="M14 3l3 3-9.5 9.5L4 17l1.5-3.5L14 3z" {...p}/><path d="M12 5l3 3" {...p}/></svg>
+    case 'grip':     return <svg {...common}><circle cx="7" cy="7"  r="1" fill={color}/><circle cx="13" cy="7"  r="1" fill={color}/><circle cx="7" cy="10" r="1" fill={color}/><circle cx="13" cy="10" r="1" fill={color}/><circle cx="7" cy="13" r="1" fill={color}/><circle cx="13" cy="13" r="1" fill={color}/></svg>
     default: return null
   }
 }

@@ -14,11 +14,13 @@ export default function PhotoUpload({ albumSlug, onUploaded, variant = 'big' }) 
     if (result?.ok) onUploaded?.(result.added)
   }
 
-  // Drag-drop: Electron exposes file.path even with contextIsolation
+  // Drag-drop: use webUtils.getPathForFile (replaces file.path deprecated in Electron 32+)
   const handleDrop = (e) => {
     e.preventDefault()
     setDragOver(false)
-    const paths = Array.from(e.dataTransfer.files).map((f) => f.path).filter(Boolean)
+    const paths = Array.from(e.dataTransfer.files)
+      .map((f) => window.api?.utils?.getPathForFile(f) ?? f.path ?? '')
+      .filter(Boolean)
     uploadPaths(paths)
   }
 

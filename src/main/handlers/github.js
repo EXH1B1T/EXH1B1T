@@ -1,5 +1,5 @@
 const { Octokit } = require('@octokit/rest')
-const https = require('https')
+const dns = require('dns').promises
 const path = require('path')
 const fs = require('fs').promises
 const { store, PATHS, readJson, writeJson } = require('../storage')
@@ -67,13 +67,24 @@ async function setupRepo() {
   return { ok: true, repoName: repo, url: `https://${repo}` }
 }
 
-async function checkDns(domain) {
-  const { data: { records } } = await getOctokit().repos
-    .getPagesHealthCheck({ owner: store.get('user').login, repo: repoName(store.get('user').login) })
-    .catch(() => ({ data: { records: null } }))
+const GITHUB_PAGES_IPS = new Set([
+  '185.199.108.153', '185.199.109.153', '185.199.110.153', '185.199.111.153',
+])
 
-  if (!records) return { ok: true, status: 'waiting', message: 'DNS records not yet detected.' }
-  return { ok: true, status: 'active', message: 'DNS verified.' }
+async function checkDns(domain) {
+  if (!domain) return { ok: true, status: 'idle', message: '' }
+  try {
+    const addresses = await dns.resolve4(domain)
+    if (addresses.some(ip => GITHUB_PAGES_IPS.has(ip))) {
+      return { ok: true, status: 'active', message: 'DNS verified — pointing to GitHub Pages.' }
+    }
+    return { ok: true, status: 'wrong', message: `Domain resolves to ${addresses[0]}, not GitHub Pages.` }
+  } catch (e) {
+    if (e.code === 'ENOTFOUND' || e.code === 'ENODATA') {
+      return { ok: true, status: 'waiting', message: 'DNS not yet detected — may take up to 48 hours.' }
+    }
+    return { ok: true, status: 'waiting', message: 'Could not check DNS. Try again later.' }
+  }
 }
 
 async function restoreFromRepo() {

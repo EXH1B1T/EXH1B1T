@@ -74,8 +74,11 @@ async function processImages(albums) {
   for (const album of albums) {
     for (const photo of album.photos ?? []) {
       if (!photo.localPath || photo.url) continue
-      // Already processed by photos.js — just verify file exists
-      await fs.access(photo.localPath).catch(() => {})
+      try {
+        await fs.access(photo.localPath)
+      } catch {
+        throw new Error(`Photo "${photo.filename}" file not found. Re-add it to the album.`)
+      }
     }
   }
 }

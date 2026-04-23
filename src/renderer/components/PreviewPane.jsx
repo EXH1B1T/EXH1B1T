@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import s from './PreviewPane.module.css'
 
-export default function PreviewPane({ page, albumSlug }) {
+export default function PreviewPane({ page, albumSlug, device = 'desktop' }) {
   const webviewRef = useRef(null)
 
   useEffect(() => {
@@ -16,15 +16,19 @@ export default function PreviewPane({ page, albumSlug }) {
     return () => { cancelled = true }
   }, [page, albumSlug])
 
+  const isMobile = device === 'mobile'
+
   return (
     <div className={s.container}>
-      {/* eslint-disable-next-line react/no-unknown-property */}
-      <webview
-        ref={webviewRef}
-        className={s.webview}
-        disablewebsecurity="true"
-        partition="persist:preview"
-      />
+      <div className={isMobile ? s.mobileFrame : s.desktopFrame}>
+        {/* eslint-disable-next-line react/no-unknown-property */}
+        <webview
+          ref={webviewRef}
+          className={s.webview}
+          disablewebsecurity="true"
+          partition="persist:preview"
+        />
+      </div>
     </div>
   )
 }

@@ -10,6 +10,9 @@ const DEFAULTS = {
     seo: { googleAnalyticsId: null, faviconUrl: null },
     customDomain: null,
     theme: { name: 'default', options: {} },
+    home: { layout: 'grid', headline: '', subhead: '', intro: '' },
+    about: { portrait: null, exhibitions: [] },
+    nav: { style: 'sidebar', homeVisible: true, aboutVisible: true, hiddenAlbums: [], links: [] },
   },
 
   album: {

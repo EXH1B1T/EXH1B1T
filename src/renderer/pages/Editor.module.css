@@ -21,23 +21,26 @@
 
 .titlebar {
   height: var(--titlebar-h);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  /* 76px left padding = 14px margin + 62px traffic-light zone */
-  padding: 0 14px 0 76px;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--border);
   -webkit-app-region: drag;
 }
 
-.appName {
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.20em;
-  flex: 1;
-  -webkit-app-region: no-drag;
+.logoBar {
+  padding: 16px 14px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* Sidebar section label */
+.sidebarSection {
+  font-size: 10.5px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 500;
+  padding: 0 8px 4px;
 }
 
 .settingsBtn {

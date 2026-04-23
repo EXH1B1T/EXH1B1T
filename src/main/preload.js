@@ -1,4 +1,6 @@
-const { contextBridge, ipcRenderer } = require('electron')
+const { contextBridge, ipcRenderer, webUtils } = require('electron')
+
+let _publishProgressHandler = null
 
 // Helper: send a one-shot IPC call and return the result.
 const invoke = (channel, ...args) => ipcRenderer.invoke(channel, ...args)
@@ -48,11 +50,16 @@ contextBridge.exposeInMainWorld('api', {
 
   publish: {
     start: () => invoke('publish:start'),
-    onProgress:  (cb) => {
-      const handler = (_event, data) => cb(data)
-      ipcRenderer.on('publish:progress', handler)
+    onProgress: (cb) => {
+      _publishProgressHandler = (_event, data) => cb(data)
+      ipcRenderer.on('publish:progress', _publishProgressHandler)
     },
-    offProgress: () => ipcRenderer.removeAllListeners('publish:progress'),
+    offProgress: () => {
+      if (_publishProgressHandler) {
+        ipcRenderer.removeListener('publish:progress', _publishProgressHandler)
+        _publishProgressHandler = null
+      }
+    },
   },
 
   github: {
@@ -64,6 +71,12 @@ contextBridge.exposeInMainWorld('api', {
 
   dialog: {
     openImages: () => invoke('dialog:openImages'),
+  },
+
+  // webUtils: needed to get file system paths from drag-dropped File objects
+  // (file.path was deprecated in Electron 32 — webUtils.getPathForFile is the replacement)
+  utils: {
+    getPathForFile: (file) => webUtils.getPathForFile(file),
   },
 
   // Auto-updater events from main process.

@@ -1,0 +1,234 @@
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.header {
+  padding: 18px 28px 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+
+.savingBadge {
+  font-size: 11px;
+  color: var(--text-3);
+  transition: opacity 0.2s;
+}
+
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ── Section ── */
+.section {}
+
+.sectionTitle {
+  font-size: 11px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+/* ── Style cards ── */
+.styleCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.styleCard {
+  background: var(--bg-2);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.styleCard:hover {
+  border-color: var(--border-2);
+  background: var(--bg-3);
+}
+
+.cardSel {
+  border-color: var(--accent) !important;
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-2));
+}
+
+.cardIcon {
+  margin-bottom: 2px;
+}
+
+.cardLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cardDesc {
+  font-size: 11.5px;
+  color: var(--text-3);
+  line-height: 1.4;
+}
+
+/* ── Menu item rows ── */
+.fixedRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 6px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+.fixedIcon {
+  flex-shrink: 0;
+  color: var(--text-3);
+}
+
+.rowLabel {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 0;
+}
+
+/* ── Draggable album rows ── */
+.albumRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 6px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  margin-bottom: 4px;
+  cursor: grab;
+  user-select: none;
+  transition: background 0.12s, border-color 0.12s, opacity 0.12s;
+}
+
+.albumRow:active { cursor: grabbing; }
+
+.albumRow.dragging { opacity: 0.4; }
+
+.albumRow.over {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--bg-2));
+}
+
+.grip {
+  flex-shrink: 0;
+  color: var(--text-3);
+  cursor: grab;
+}
+
+/* ── Custom links ── */
+.linkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+.linkLabel {
+  width: 90px;
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--border);
+  font-size: 12.5px;
+  color: var(--text);
+  padding: 2px 8px 2px 0;
+  outline: none;
+}
+
+.linkUrl {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  padding: 2px 0;
+  outline: none;
+  min-width: 0;
+}
+
+.deleteBtn {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  background: transparent;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.deleteBtn:hover {
+  background: color-mix(in srgb, var(--danger) 15%, transparent);
+  color: var(--danger);
+}
+
+.addLinkBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  background: transparent;
+  border: 1px dashed var(--border-2);
+  color: var(--text-3);
+  font-size: 12px;
+  cursor: pointer;
+  width: 100%;
+  transition: border-color 0.12s, color 0.12s, background 0.12s;
+}
+
+.addLinkBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}

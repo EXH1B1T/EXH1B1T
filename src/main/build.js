@@ -14,12 +14,24 @@ Handlebars.registerHelper('formatDate', (dateStr) => {
 
 Handlebars.registerHelper('albumUrl', (slug) => `/albums/${slug}`)
 
-Handlebars.registerHelper('imageUrl', (photo) => photo?.url ?? photo?.localPath ?? '')
-Handlebars.registerHelper('thumbUrl',  (photo) => photo?.thumbUrl ?? photo?.url ?? photo?.localPath ?? '')
+// Convert an absolute local path to a local:// URL usable in the preview webview.
+function toLocalUrl(absPath) {
+  if (!absPath) return ''
+  // local:// is registered as a standard scheme, so Chromium treats it host-based.
+  // local:///Users/foo → hostname=users, pathname=/foo. The protocol handler
+  // reconstructs: /${hostname}${pathname} = /users/foo (case-insensitive on macOS).
+  return `local://${absPath}`
+}
+
+Handlebars.registerHelper('imageUrl', (photo) => photo?.url ?? toLocalUrl(photo?.localPath))
+Handlebars.registerHelper('thumbUrl',  (photo) =>
+  photo?.thumbUrl ?? toLocalUrl(photo?.thumbLocalPath) ?? photo?.url ?? toLocalUrl(photo?.localPath))
 Handlebars.registerHelper('coverUrl',  (album) => {
   const cover = album?.photos?.find(p => p.filename === album.coverPhoto) ?? album?.photos?.[0]
-  return cover?.url ?? cover?.localPath ?? ''
+  return cover?.url ?? toLocalUrl(cover?.localPath)
 })
+
+Handlebars.registerHelper('eq', (a, b) => a === b)
 
 Handlebars.registerHelper('aspectRatio', (photo) => {
   if (!photo?.width || !photo?.height) return '1 / 1'

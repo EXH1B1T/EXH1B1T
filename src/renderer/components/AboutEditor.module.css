@@ -1,0 +1,251 @@
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.header {
+  padding: 18px 28px 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+
+.savingBadge {
+  font-size: 11px;
+  color: var(--text-3);
+  transition: opacity 0.2s;
+}
+
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ── Section ── */
+.sectionTitle {
+  font-size: 11px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.sectionHint {
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+/* ── Portrait ── */
+.portraitArea {
+  display: block;
+  width: 140px;
+  height: 140px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px dashed var(--border-2);
+  cursor: pointer;
+  position: relative;
+  background: var(--bg-2);
+  transition: border-color 0.15s;
+}
+
+.portraitArea:hover {
+  border-color: var(--accent);
+}
+
+.portraitArea:hover .portraitOverlay {
+  opacity: 1;
+}
+
+.portraitImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.portraitEmpty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text-3);
+  font-size: 11.5px;
+  text-align: center;
+  padding: 12px;
+  line-height: 1.5;
+}
+
+.portraitOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: white;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+/* ── Fields ── */
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Add button ── */
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 5px;
+  background: var(--bg-3);
+  border: 1px solid var(--border-2);
+  color: var(--text-2);
+  font-size: 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.12s, color 0.12s;
+}
+
+.addBtn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0f0f0f;
+}
+
+/* ── Exhibition list ── */
+.exhibitionList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exhibitionCard {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.exTitle {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  padding: 3px 0;
+  outline: none;
+}
+
+.exTitle:focus {
+  border-bottom-color: var(--accent);
+}
+
+.exVenue {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  font-size: 12px;
+  color: var(--text-2);
+  padding: 3px 0;
+  outline: none;
+}
+
+.exVenue:focus {
+  border-bottom-color: var(--border-2);
+}
+
+.exYear {
+  width: 52px;
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  font-size: 12px;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  padding: 3px 0;
+  outline: none;
+  text-align: right;
+}
+
+.exYear:focus {
+  border-bottom-color: var(--border-2);
+}
+
+.deleteBtn {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  background: transparent;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.deleteBtn:hover {
+  background: color-mix(in srgb, var(--danger) 15%, transparent);
+  color: var(--danger);
+}
+
+/* ── Empty state ── */
+.empty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 0 8px;
+  color: var(--text-3);
+  font-size: 12px;
+  line-height: 1.5;
+}

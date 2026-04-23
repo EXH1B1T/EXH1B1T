@@ -1,149 +1,460 @@
 <!--
   @portfolio-theme default
-  @description Clean serif layout. Large imagery, minimal chrome.
+  @description Editorial portfolio. Generous space, refined typography, full-bleed imagery.
   compatibility: portfolio-spec@1.4
 -->
 
 <style data-scope="global">
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap');
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:      #fafaf7;
-    --text:    #1a1a1a;
-    --text-2:  #666;
-    --border:  #e0ddd8;
-    --serif:   "Times New Roman", Georgia, serif;
-    --sans:    ui-sans-serif, system-ui, -apple-system, sans-serif;
-    --max-w:   860px;
+    --bg:        #f9f8f5;
+    --bg-2:      #f0efe9;
+    --text:      #111;
+    --text-2:    #777;
+    --text-3:    #aaa;
+    --border:    #e5e3db;
+    --serif:     'Cormorant Garamond', 'Times New Roman', Georgia, serif;
+    --sans:      'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --max-w:     1120px;
+    --nav-h:     58px;
+    --pad:       40px;
   }
+
+  html { scroll-behavior: smooth; }
 
   body {
     font-family: var(--sans);
     background: var(--bg);
     color: var(--text);
     font-size: 14px;
-    line-height: 1.6;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   a { color: inherit; text-decoration: none; }
   img { display: block; max-width: 100%; }
 
-  /* ── Nav ── */
-  .site-nav {
+  /* ── Navigation ─────────────────────────────────────────────────────────── */
+  .nav {
     position: sticky; top: 0;
-    background: var(--bg);
+    background: rgba(249,248,245,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
-    z-index: 10;
+    z-index: 100;
   }
-  .site-nav__inner {
+  .nav__inner {
     max-width: var(--max-w);
     margin: 0 auto;
-    padding: 0 24px;
-    height: 52px;
+    padding: 0 var(--pad);
+    height: var(--nav-h);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 32px;
   }
-  .site-nav__logo {
+  .nav__logo {
     font-family: var(--serif);
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
+    font-size: 19px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    flex-shrink: 0;
   }
-  .site-nav__links {
-    display: flex;
-    gap: 24px;
-    list-style: none;
+  .nav__links {
+    display: flex; gap: 32px;
+    list-style: none; align-items: center;
   }
-  .site-nav__links a {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+  .nav__links a {
+    font-size: 10.5px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.13em;
     color: var(--text-2);
-    transition: color 0.12s;
+    transition: color 0.18s;
   }
-  .site-nav__links a:hover { color: var(--text); }
+  .nav__links a:hover,
+  .nav__links a.is-active { color: var(--text); }
 
-  /* ── Page wrapper ── */
+  /* ── Page shell ─────────────────────────────────────────────────────────── */
   .page {
     max-width: var(--max-w);
     margin: 0 auto;
-    padding: 48px 24px 80px;
+    padding: 0 var(--pad) 100px;
   }
 
-  /* ── Home: hero + grid ── */
-  .home-hero { margin-bottom: 12px; }
-  .home-hero img { width: 100%; height: 480px; object-fit: cover; background: #eee; }
-
-  .home-meta {
+  /* ── Footer ─────────────────────────────────────────────────────────────── */
+  .footer {
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+  }
+  .footer__inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 28px var(--pad);
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    padding: 12px 0 8px;
+    align-items: center;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+  }
+  .footer__social { display: flex; gap: 20px; }
+  .footer a:hover { color: var(--text); }
+
+  /* ── Fade-in animation ───────────────────────────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .u-fade    { animation: fadeUp 0.55s ease both; }
+  .u-fade-2  { animation: fadeUp 0.55s 0.08s ease both; }
+  .u-fade-3  { animation: fadeUp 0.55s 0.16s ease both; }
+  .u-fade-4  { animation: fadeUp 0.55s 0.24s ease both; }
+
+  /* ═══════════════════════════════════════
+     HOME PAGE
+  ═══════════════════════════════════════ */
+
+  /* Intro text block */
+  .home-intro {
+    padding: 64px 0 52px;
     border-bottom: 1px solid var(--border);
-    margin-bottom: 20px;
+    margin-bottom: 60px;
   }
-  .home-meta__title { font-family: var(--serif); font-size: 22px; font-weight: 700; }
-  .home-meta__date  { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-2); }
+  .home-intro__headline {
+    font-family: var(--serif);
+    font-size: clamp(38px, 5vw, 62px);
+    font-weight: 300;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    margin-bottom: 14px;
+    max-width: 700px;
+  }
+  .home-intro__subhead {
+    font-size: 11px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--text-3);
+    margin-bottom: 22px;
+  }
+  .home-intro__text {
+    font-size: 15px; line-height: 1.8;
+    color: #4a4a4a;
+    max-width: 500px;
+  }
 
-  .home-desc { font-size: 13.5px; color: #444; line-height: 1.7; max-width: 540px; margin-bottom: 28px; }
-
-  .photo-grid {
+  /* Albums — grid layout */
+  .albums-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 3px;
   }
-  .photo-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #eee; }
+  .albums-grid .album-card:first-child {
+    grid-column: 1 / -1;
+    aspect-ratio: 16/7;
+  }
 
-  /* ── Album page ── */
-  .album-header { margin-bottom: 28px; }
+  .album-card {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-2);
+    aspect-ratio: 4/3;
+  }
+  .album-card img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.65s cubic-bezier(0.22, 0, 0.08, 1);
+  }
+  .album-card:hover img { transform: scale(1.05); }
+  .album-card__overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(5,5,5,0.72) 0%, rgba(5,5,5,0.08) 55%, transparent 100%);
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 24px 26px;
+    transition: opacity 0.3s;
+    opacity: 0.85;
+  }
+  .album-card:hover .album-card__overlay { opacity: 1; }
+  .album-card__title {
+    font-family: var(--serif);
+    font-size: 22px; font-weight: 300;
+    color: #fff; letter-spacing: 0.01em; line-height: 1.2;
+  }
+  .albums-grid .album-card:first-child .album-card__title { font-size: 34px; }
+  .album-card__meta {
+    font-size: 10.5px; color: rgba(255,255,255,0.55);
+    text-transform: uppercase; letter-spacing: 0.11em;
+    margin-top: 6px;
+  }
+
+  /* Albums — list layout */
+  .albums-list { display: flex; flex-direction: column; }
+  .album-row {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.18s;
+  }
+  .album-row:first-child { border-top: 1px solid var(--border); }
+  .album-row:hover { background: var(--bg-2); }
+  .album-row__cover {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background: var(--bg-2);
+  }
+  .album-row__cover img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+  .album-row:hover .album-row__cover img { transform: scale(1.03); }
+  .album-row__body {
+    padding: 36px 48px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .album-row__date {
+    font-size: 10.5px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--text-3); margin-bottom: 14px;
+  }
+  .album-row__title {
+    font-family: var(--serif);
+    font-size: 32px; font-weight: 300;
+    line-height: 1.15; letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .album-row__desc {
+    font-size: 13.5px; color: var(--text-2);
+    line-height: 1.75; max-width: 400px;
+  }
+  .album-row__count {
+    margin-top: 24px;
+    font-size: 10.5px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--text-3);
+  }
+
+  /* ═══════════════════════════════════════
+     ALBUM PAGE
+  ═══════════════════════════════════════ */
+
+  .album-hero {
+    width: 100%;
+    height: min(62vh, 640px);
+    overflow: hidden;
+    background: var(--bg-2);
+  }
+  .album-hero img { width: 100%; height: 100%; object-fit: cover; }
+
+  .album-header {
+    max-width: var(--max-w); margin: 0 auto;
+    padding: 36px var(--pad) 38px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .album-header__left {}
+  .album-header__eyebrow {
+    font-size: 10.5px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.13em;
+    color: var(--text-3); margin-bottom: 10px;
+  }
   .album-header__title {
     font-family: var(--serif);
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 6px;
-    letter-spacing: -0.5px;
+    font-size: clamp(30px, 4vw, 50px);
+    font-weight: 300; line-height: 1.1;
+    letter-spacing: -0.025em;
   }
-  .album-header__meta { font-size: 12px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.08em; }
-  .album-header__desc { font-size: 13.5px; color: #444; margin-top: 10px; max-width: 540px; line-height: 1.7; }
+  .album-header__desc {
+    font-size: 14px; color: var(--text-2);
+    line-height: 1.75; max-width: 480px;
+    margin-top: 14px;
+  }
+  .album-header__count {
+    font-size: 11px; color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    white-space: nowrap; flex-shrink: 0;
+    padding-bottom: 6px;
+  }
 
-  .album-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .album-grid img { width: 100%; object-fit: cover; background: #eee; }
+  /* Masonry photo grid */
+  .photo-masonry {
+    columns: 2; column-gap: 3px;
+    padding: 3px var(--pad) 80px;
+    max-width: var(--max-w); margin: 0 auto;
+  }
+  .photo-masonry__item {
+    break-inside: avoid; margin-bottom: 3px;
+    position: relative; overflow: hidden;
+    background: var(--bg-2); cursor: zoom-in;
+  }
+  .photo-masonry__item img {
+    width: 100%; display: block;
+    transition: transform 0.55s cubic-bezier(0.22, 0, 0.08, 1);
+  }
+  .photo-masonry__item:hover img { transform: scale(1.03); }
+  .photo-masonry__caption {
+    padding: 10px 14px;
+    font-size: 12px; color: var(--text-2); line-height: 1.5;
+  }
 
-  /* ── About page ── */
+  /* ── Lightbox ─────────────────────────────────────────────────────────── */
+  .lb {
+    position: fixed; inset: 0;
+    background: rgba(6,6,6,0.96);
+    z-index: 999;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.22s;
+  }
+  .lb.lb--open { opacity: 1; pointer-events: all; }
+  .lb__img {
+    max-width: 90vw; max-height: 90vh;
+    object-fit: contain; user-select: none;
+    transition: opacity 0.18s;
+  }
+  .lb__close {
+    position: absolute; top: 18px; right: 22px;
+    background: none; border: none;
+    color: rgba(255,255,255,0.5); font-size: 28px; line-height: 1;
+    cursor: pointer; transition: color 0.15s; padding: 4px 8px;
+  }
+  .lb__close:hover { color: #fff; }
+  .lb__btn {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: none; border: none;
+    color: rgba(255,255,255,0.35);
+    font-size: 32px; padding: 16px 22px;
+    cursor: pointer; transition: color 0.15s;
+    -webkit-user-select: none; user-select: none;
+  }
+  .lb__btn:hover { color: rgba(255,255,255,0.9); }
+  .lb__prev { left: 0; }
+  .lb__next { right: 0; }
+  .lb__caption {
+    position: absolute; bottom: 22px;
+    left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.4);
+    font-size: 11.5px; letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .lb__counter {
+    position: absolute; bottom: 22px; right: var(--pad);
+    color: rgba(255,255,255,0.3);
+    font-size: 11px; letter-spacing: 0.08em;
+  }
+
+  /* ═══════════════════════════════════════
+     ABOUT PAGE
+  ═══════════════════════════════════════ */
+
+  .about-wrap {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 96px;
+    padding-top: 72px;
+    align-items: start;
+  }
+  .about-portrait {
+    position: sticky;
+    top: calc(var(--nav-h) + 28px);
+  }
+  .about-portrait img {
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    background: var(--bg-2);
+    filter: grayscale(8%);
+  }
+  .about-portrait__placeholder {
+    width: 100%; aspect-ratio: 3/4;
+    background: var(--bg-2);
+  }
+
+  .about-content {}
   .about-name {
     font-family: var(--serif);
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 24px;
-    letter-spacing: -0.5px;
+    font-size: clamp(34px, 4.5vw, 56px);
+    font-weight: 300; line-height: 1.08;
+    letter-spacing: -0.03em;
+    margin-bottom: 32px;
   }
-  .about-bio { font-size: 15px; color: #333; line-height: 1.75; max-width: 520px; margin-bottom: 32px; }
-  .about-contact-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text-2);
-    margin-bottom: 6px;
-  }
-  .about-contact-email { font-size: 14px; }
-
-  /* ── Footer ── */
-  .site-footer {
-    border-top: 1px solid var(--border);
-    padding: 24px;
-    text-align: center;
-    font-size: 11px;
-    color: var(--text-2);
+  .about-bio {
+    font-size: 15.5px; line-height: 1.82;
+    color: #383838; margin-bottom: 48px;
+    max-width: 520px;
   }
 
-  {{inject-style}}
+  .about-block { margin-bottom: 44px; }
+  .about-block__label {
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--text-3);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+
+  .about-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .about-link {
+    display: inline-block;
+    font-size: 10.5px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.11em;
+    padding: 8px 18px;
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .about-link:hover { border-color: var(--text); color: var(--text); }
+
+  .exhibitions { margin-top: 2px; }
+  .exhibition {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .exhibition__title { font-size: 13.5px; font-weight: 400; line-height: 1.45; }
+  .exhibition__venue { font-size: 12px; color: var(--text-2); margin-top: 3px; }
+  .exhibition__year {
+    font-size: 12px; color: var(--text-3);
+    font-variant-numeric: tabular-nums;
+    padding-top: 2px; flex-shrink: 0;
+  }
+
+  /* ── Responsive ─────────────────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    :root { --pad: 24px; }
+    .about-wrap { grid-template-columns: 1fr; gap: 40px; padding-top: 48px; }
+    .about-portrait { position: static; }
+    .about-portrait img { aspect-ratio: 1/1; max-width: 280px; }
+    .album-row { grid-template-columns: 260px 1fr; }
+    .album-row__body { padding: 24px 28px; }
+    .album-header { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (max-width: 640px) {
+    :root { --pad: 16px; }
+    .nav__links { gap: 18px; }
+    .home-intro { padding: 44px 0 40px; margin-bottom: 40px; }
+    .albums-grid { grid-template-columns: 1fr 1fr; }
+    .albums-grid .album-card:first-child { aspect-ratio: 4/3; }
+    .album-hero { height: 56vw; }
+    .photo-masonry { columns: 1; }
+    .album-row { grid-template-columns: 1fr; }
+    .album-row__cover { aspect-ratio: 16/9; }
+    .album-row__body { padding: 20px; }
+    .footer__inner { flex-direction: column; gap: 10px; text-align: center; }
+  }
 </style>
 
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!--  HOME PAGE                                                              -->
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     HOME
+═══════════════════════════════════════════════════════════════════════════ -->
 <template data-page="home">
 <!DOCTYPE html>
 <html lang="{{site.lang}}">
@@ -157,45 +468,79 @@
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','{{site.seo.googleAnalyticsId}}');</script>
   {{/if}}
   {{#if site.seo.faviconUrl}}<link rel="icon" href="{{site.seo.faviconUrl}}"/>{{/if}}
+  {{inject-style}}
 </head>
 <body>
 
-<nav class="site-nav">
-  <div class="site-nav__inner">
-    <a href="/" class="site-nav__logo">{{site.owner.name}}</a>
-    <ul class="site-nav__links">
-      <li><a href="/">Work</a></li>
-      <li><a href="/about">About</a></li>
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="/" class="nav__logo">{{site.owner.name}}</a>
+    <ul class="nav__links">
+      {{#unless (eq site.nav.homeVisible false)}}<li><a href="/" class="is-active">Work</a></li>{{/unless}}
+      {{#unless (eq site.nav.aboutVisible false)}}<li><a href="/about">About</a></li>{{/unless}}
+      {{#if site.nav.links}}{{#each site.nav.links}}
+      <li><a href="{{url}}">{{label}}</a></li>
+      {{/each}}{{/if}}
       {{#if site.social.instagram}}<li><a href="https://instagram.com/{{site.social.instagram}}" target="_blank" rel="noreferrer">Instagram</a></li>{{/if}}
     </ul>
   </div>
 </nav>
 
 <main class="page">
-  {{#with (lookup albums 0)}}
-  <div class="home-hero">
-    <a href="{{albumUrl slug}}">
-      <img src="{{coverUrl this}}" alt="{{title}}"/>
+
+  {{#if site.home.headline}}
+  <div class="home-intro u-fade">
+    <h1 class="home-intro__headline">{{site.home.headline}}</h1>
+    {{#if site.home.subhead}}<div class="home-intro__subhead">{{site.home.subhead}}</div>{{/if}}
+    {{#if site.home.intro}}<p class="home-intro__text">{{site.home.intro}}</p>{{/if}}
+  </div>
+  {{/if}}
+
+  {{#if (eq site.home.layout 'list')}}
+
+  <div class="albums-list u-fade-2">
+    {{#each albums}}
+    <a class="album-row" href="{{albumUrl slug}}">
+      <div class="album-row__cover">
+        <img src="{{coverUrl this}}" alt="{{title}}" loading="lazy"/>
+      </div>
+      <div class="album-row__body">
+        <div class="album-row__date">{{formatDate date}}</div>
+        <div class="album-row__title">{{title}}</div>
+        {{#if description}}<p class="album-row__desc">{{description}}</p>{{/if}}
+        <div class="album-row__count">{{photoCount this}} photos</div>
+      </div>
     </a>
+    {{/each}}
   </div>
-  <div class="home-meta">
-    <a href="{{albumUrl slug}}" class="home-meta__title">{{title}}</a>
-    <span class="home-meta__date">{{formatDate date}}</span>
-  </div>
-  {{#if description}}<p class="home-desc">{{description}}</p>{{/if}}
-  <div class="photo-grid">
-    {{#each photos}}{{#unless @first}}
-    <a href="{{albumUrl ../slug}}">
-      <img src="{{thumbUrl this}}" alt="{{altText}}"/>
+
+  {{else}}
+
+  <div class="albums-grid u-fade-2">
+    {{#each albums}}
+    <a class="album-card" href="{{albumUrl slug}}">
+      <img src="{{coverUrl this}}" alt="{{title}}" loading="lazy"/>
+      <div class="album-card__overlay">
+        <div class="album-card__title">{{title}}</div>
+        <div class="album-card__meta">{{formatDate date}} &ensp;·&ensp; {{photoCount this}} photos</div>
+      </div>
     </a>
-    {{/unless}}{{/each}}
+    {{/each}}
   </div>
-  {{/with}}
+
+  {{/if}}
+
 </main>
 
-<footer class="site-footer">
-  © {{site.owner.name}}
-  {{#if site.social.email}} · <a href="mailto:{{site.social.email}}">{{site.social.email}}</a>{{/if}}
+<footer class="footer">
+  <div class="footer__inner">
+    <span>© {{site.owner.name}}</span>
+    <div class="footer__social">
+      {{#if site.social.email}}<a href="mailto:{{site.social.email}}">{{site.social.email}}</a>{{/if}}
+      {{#if site.social.instagram}}<a href="https://instagram.com/{{site.social.instagram}}" target="_blank" rel="noreferrer">Instagram</a>{{/if}}
+      {{#if site.social.facebook}}<a href="https://facebook.com/{{site.social.facebook}}" target="_blank" rel="noreferrer">Facebook</a>{{/if}}
+    </div>
+  </div>
 </footer>
 
 {{inject-script}}
@@ -203,9 +548,10 @@
 </html>
 </template>
 
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!--  ALBUM PAGE                                                             -->
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     ALBUM
+═══════════════════════════════════════════════════════════════════════════ -->
 <template data-page="album">
 <!DOCTYPE html>
 <html lang="{{site.lang}}">
@@ -215,42 +561,118 @@
   <title>{{album.title}} — {{site.owner.name}}</title>
   <meta name="description" content="{{album.description}}"/>
   {{#if site.seo.faviconUrl}}<link rel="icon" href="{{site.seo.faviconUrl}}"/>{{/if}}
+  {{inject-style}}
 </head>
 <body>
 
-<nav class="site-nav">
-  <div class="site-nav__inner">
-    <a href="/" class="site-nav__logo">{{site.owner.name}}</a>
-    <ul class="site-nav__links">
-      <li><a href="/">Work</a></li>
-      <li><a href="/about">About</a></li>
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="/" class="nav__logo">{{site.owner.name}}</a>
+    <ul class="nav__links">
+      {{#unless (eq site.nav.homeVisible false)}}<li><a href="/">Work</a></li>{{/unless}}
+      {{#unless (eq site.nav.aboutVisible false)}}<li><a href="/about">About</a></li>{{/unless}}
+      {{#if site.nav.links}}{{#each site.nav.links}}<li><a href="{{url}}">{{label}}</a></li>{{/each}}{{/if}}
     </ul>
   </div>
 </nav>
 
-<main class="page">
-  <header class="album-header">
+<div class="album-hero u-fade">
+  <img src="{{coverUrl album}}" alt="{{album.title}}"/>
+</div>
+
+<div class="album-header u-fade-2">
+  <div class="album-header__left">
+    <div class="album-header__eyebrow">{{formatDate album.date}}</div>
     <h1 class="album-header__title">{{album.title}}</h1>
-    <div class="album-header__meta">{{formatDate album.date}} · {{photoCount album}} photos</div>
     {{#if album.description}}<p class="album-header__desc">{{album.description}}</p>{{/if}}
-  </header>
-
-  <div class="album-grid">
-    {{#each album.photos}}
-    <img src="{{imageUrl this}}" alt="{{altText}}" loading="lazy"/>
-    {{/each}}
   </div>
-</main>
+  <div class="album-header__count">{{photoCount album}} photos</div>
+</div>
 
-<footer class="site-footer">© {{site.owner.name}}</footer>
+<div class="photo-masonry u-fade-3" id="photo-masonry">
+  {{#each album.photos}}
+  <div class="photo-masonry__item" data-src="{{imageUrl this}}" data-index="{{@index}}">
+    <img src="{{imageUrl this}}" alt="{{altText}}" loading="lazy"/>
+    {{#if caption}}<div class="photo-masonry__caption">{{caption}}</div>{{/if}}
+  </div>
+  {{/each}}
+</div>
+
+<!-- Lightbox -->
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button class="lb__close" id="lb-close" aria-label="Close">&#x2715;</button>
+  <button class="lb__btn lb__prev" id="lb-prev" aria-label="Previous">&#x2039;</button>
+  <img class="lb__img" id="lb-img" src="" alt=""/>
+  <button class="lb__btn lb__next" id="lb-next" aria-label="Next">&#x203a;</button>
+  <div class="lb__caption" id="lb-caption"></div>
+  <div class="lb__counter" id="lb-counter"></div>
+</div>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <span>© {{site.owner.name}}</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  const items  = Array.from(document.querySelectorAll('.photo-masonry__item'))
+  const lb     = document.getElementById('lb')
+  const lbImg  = document.getElementById('lb-img')
+  const lbCap  = document.getElementById('lb-caption')
+  const lbCnt  = document.getElementById('lb-counter')
+  let cur = 0
+
+  function show(i) {
+    cur = (i + items.length) % items.length
+    const item = items[cur]
+    lbImg.style.opacity = '0'
+    lbImg.src = item.dataset.src
+    lbImg.onload = () => { lbImg.style.opacity = '1' }
+    const cap = item.querySelector('.photo-masonry__caption')
+    lbCap.textContent = cap ? cap.textContent.trim() : ''
+    lbCnt.textContent = (cur + 1) + ' / ' + items.length
+    lb.classList.add('lb--open')
+    document.body.style.overflow = 'hidden'
+  }
+
+  function close() {
+    lb.classList.remove('lb--open')
+    document.body.style.overflow = ''
+  }
+
+  items.forEach((el, i) => el.addEventListener('click', () => show(i)))
+  document.getElementById('lb-close').addEventListener('click', close)
+  document.getElementById('lb-prev').addEventListener('click', () => show(cur - 1))
+  document.getElementById('lb-next').addEventListener('click', () => show(cur + 1))
+  lb.addEventListener('click', (e) => { if (e.target === lb) close() })
+
+  document.addEventListener('keydown', (e) => {
+    if (!lb.classList.contains('lb--open')) return
+    if (e.key === 'Escape')      close()
+    if (e.key === 'ArrowLeft')   show(cur - 1)
+    if (e.key === 'ArrowRight')  show(cur + 1)
+  })
+
+  // Touch swipe
+  let tx = 0
+  lb.addEventListener('touchstart', (e) => { tx = e.touches[0].clientX }, { passive: true })
+  lb.addEventListener('touchend',   (e) => {
+    const dx = e.changedTouches[0].clientX - tx
+    if (Math.abs(dx) > 40) show(dx < 0 ? cur + 1 : cur - 1)
+  })
+}())
+</script>
+
 {{inject-script}}
 </body>
 </html>
 </template>
 
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!--  ABOUT PAGE                                                             -->
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     ABOUT
+═══════════════════════════════════════════════════════════════════════════ -->
 <template data-page="about">
 <!DOCTYPE html>
 <html lang="{{site.lang}}">
@@ -259,40 +681,110 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>About — {{site.owner.name}}</title>
   {{#if site.seo.faviconUrl}}<link rel="icon" href="{{site.seo.faviconUrl}}"/>{{/if}}
+  {{inject-style}}
 </head>
 <body>
 
-<nav class="site-nav">
-  <div class="site-nav__inner">
-    <a href="/" class="site-nav__logo">{{site.owner.name}}</a>
-    <ul class="site-nav__links">
-      <li><a href="/">Work</a></li>
-      <li><a href="/about">About</a></li>
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="/" class="nav__logo">{{site.owner.name}}</a>
+    <ul class="nav__links">
+      {{#unless (eq site.nav.homeVisible false)}}<li><a href="/">Work</a></li>{{/unless}}
+      {{#unless (eq site.nav.aboutVisible false)}}<li><a href="/about" class="is-active">About</a></li>{{/unless}}
+      {{#if site.nav.links}}{{#each site.nav.links}}<li><a href="{{url}}">{{label}}</a></li>{{/each}}{{/if}}
     </ul>
   </div>
 </nav>
 
 <main class="page">
-  <h1 class="about-name">{{site.owner.name}}</h1>
-  {{#if site.owner.bio}}<p class="about-bio">{{site.owner.bio}}</p>{{/if}}
-  {{#if site.social.email}}
-  <div class="about-contact-label">Contact</div>
-  <div class="about-contact-email"><a href="mailto:{{site.social.email}}">{{site.social.email}}</a></div>
-  {{/if}}
+  <div class="about-wrap">
+
+    <!-- Portrait -->
+    <div class="about-portrait u-fade">
+      {{#if site.about.portrait}}
+      <img src="{{site.about.portrait}}" alt="{{site.owner.name}}"/>
+      {{else}}
+      <div class="about-portrait__placeholder"></div>
+      {{/if}}
+    </div>
+
+    <!-- Content -->
+    <div class="about-content">
+      <h1 class="about-name u-fade">{{site.owner.name}}</h1>
+
+      {{#if site.owner.bio}}
+      <p class="about-bio u-fade-2">{{site.owner.bio}}</p>
+      {{/if}}
+
+      {{#if site.about.exhibitions}}
+      {{#if site.about.exhibitions.length}}
+      <div class="about-block u-fade-3">
+        <div class="about-block__label">Exhibitions &amp; Press</div>
+        <div class="exhibitions">
+          {{#each site.about.exhibitions}}
+          <div class="exhibition">
+            <div>
+              <div class="exhibition__title">{{title}}</div>
+              {{#if venue}}<div class="exhibition__venue">{{venue}}</div>{{/if}}
+            </div>
+            {{#if year}}<div class="exhibition__year">{{year}}</div>{{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+      {{/if}}
+
+      <div class="about-block u-fade-4">
+        <div class="about-block__label">Contact</div>
+        <div class="about-links">
+          {{#if site.social.email}}
+          <a class="about-link" href="mailto:{{site.social.email}}">Email</a>
+          {{/if}}
+          {{#if site.social.instagram}}
+          <a class="about-link" href="https://instagram.com/{{site.social.instagram}}" target="_blank" rel="noreferrer">Instagram</a>
+          {{/if}}
+          {{#if site.social.facebook}}
+          <a class="about-link" href="https://facebook.com/{{site.social.facebook}}" target="_blank" rel="noreferrer">Facebook</a>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+
+  </div>
 </main>
 
-<footer class="site-footer">© {{site.owner.name}}</footer>
+<footer class="footer">
+  <div class="footer__inner">
+    <span>© {{site.owner.name}}</span>
+  </div>
+</footer>
+
 {{inject-script}}
 </body>
 </html>
 </template>
 
+
 <script data-scope="global">
-  // Lazy-load images below the fold.
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.src = e.target.dataset.src || e.target.src; io.unobserve(e.target); } });
-    }, { rootMargin: '200px' });
-    document.querySelectorAll('img[loading="lazy"]').forEach(img => io.observe(img));
-  }
+// Scroll-triggered fade-in for elements below the fold
+(function () {
+  if (!('IntersectionObserver' in window)) return
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.style.animationPlayState = 'running'
+        io.unobserve(e.target)
+      }
+    })
+  }, { rootMargin: '0px 0px -60px 0px' })
+
+  // Pause animations for below-fold elements; play when visible
+  document.querySelectorAll('.photo-masonry__item').forEach((el, i) => {
+    el.style.opacity = '0'
+    el.style.animation = `fadeUp 0.4s ${Math.min(i * 0.04, 0.3)}s ease both paused`
+    el.style.animationPlayState = 'paused'
+    io.observe(el)
+  })
+}())
 </script>
