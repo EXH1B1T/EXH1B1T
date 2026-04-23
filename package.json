@@ -1,0 +1,43 @@
+{
+  "name": "exhbt",
+  "version": "1.0.0",
+  "description": "Create a free photo portfolio hosted on GitHub Pages",
+  "main": "src/main/index.js",
+  "scripts": {
+    "dev": "concurrently \"vite\" \"electron .\"",
+    "build": "vite build && electron-builder",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@octokit/rest": "^21.0.0",
+    "electron-store": "^10.0.0",
+    "electron-updater": "^6.3.0",
+    "handlebars": "^4.7.8",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.0",
+    "concurrently": "^9.0.0",
+    "electron": "^41.3.0",
+    "electron-builder": "^26.8.1",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "vite": "^7.0.0"
+  },
+  "build": {
+    "appId": "com.exhbt.app",
+    "productName": "EXHBT",
+    "mac": {
+      "category": "public.app-category.photography",
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "YOUR_GITHUB_USERNAME",
+      "repo": "exhbt"
+    }
+  }
+}

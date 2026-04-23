@@ -1,0 +1,34 @@
+/* PreviewPane — live-preview webview area */
+
+.container {
+  flex: 1;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Electron WebView or iframe filling the pane */
+.webview {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: #fafaf7;
+}
+
+/* Empty state — shown before first build */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 10px;
+  color: var(--text-3);
+  font-size: 12px;
+  text-align: center;
+  padding: 32px;
+}

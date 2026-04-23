@@ -1,0 +1,298 @@
+<!--
+  @portfolio-theme default
+  @description Clean serif layout. Large imagery, minimal chrome.
+  compatibility: portfolio-spec@1.4
+-->
+
+<style data-scope="global">
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #fafaf7;
+    --text:    #1a1a1a;
+    --text-2:  #666;
+    --border:  #e0ddd8;
+    --serif:   "Times New Roman", Georgia, serif;
+    --sans:    ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --max-w:   860px;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+
+  /* ── Nav ── */
+  .site-nav {
+    position: sticky; top: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    z-index: 10;
+  }
+  .site-nav__inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .site-nav__logo {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .site-nav__links {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+  }
+  .site-nav__links a {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-2);
+    transition: color 0.12s;
+  }
+  .site-nav__links a:hover { color: var(--text); }
+
+  /* ── Page wrapper ── */
+  .page {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ── Home: hero + grid ── */
+  .home-hero { margin-bottom: 12px; }
+  .home-hero img { width: 100%; height: 480px; object-fit: cover; background: #eee; }
+
+  .home-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 0 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .home-meta__title { font-family: var(--serif); font-size: 22px; font-weight: 700; }
+  .home-meta__date  { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-2); }
+
+  .home-desc { font-size: 13.5px; color: #444; line-height: 1.7; max-width: 540px; margin-bottom: 28px; }
+
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+  }
+  .photo-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #eee; }
+
+  /* ── Album page ── */
+  .album-header { margin-bottom: 28px; }
+  .album-header__title {
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+  .album-header__meta { font-size: 12px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.08em; }
+  .album-header__desc { font-size: 13.5px; color: #444; margin-top: 10px; max-width: 540px; line-height: 1.7; }
+
+  .album-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .album-grid img { width: 100%; object-fit: cover; background: #eee; }
+
+  /* ── About page ── */
+  .about-name {
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+  }
+  .about-bio { font-size: 15px; color: #333; line-height: 1.75; max-width: 520px; margin-bottom: 32px; }
+  .about-contact-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-2);
+    margin-bottom: 6px;
+  }
+  .about-contact-email { font-size: 14px; }
+
+  /* ── Footer ── */
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding: 24px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-2);
+  }
+
+  {{inject-style}}
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!--  HOME PAGE                                                              -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<template data-page="home">
+<!DOCTYPE html>
+<html lang="{{site.lang}}">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>{{site.title}}</title>
+  <meta name="description" content="{{site.description}}"/>
+  {{#if site.seo.googleAnalyticsId}}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{site.seo.googleAnalyticsId}}"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','{{site.seo.googleAnalyticsId}}');</script>
+  {{/if}}
+  {{#if site.seo.faviconUrl}}<link rel="icon" href="{{site.seo.faviconUrl}}"/>{{/if}}
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav__inner">
+    <a href="/" class="site-nav__logo">{{site.owner.name}}</a>
+    <ul class="site-nav__links">
+      <li><a href="/">Work</a></li>
+      <li><a href="/about">About</a></li>
+      {{#if site.social.instagram}}<li><a href="https://instagram.com/{{site.social.instagram}}" target="_blank" rel="noreferrer">Instagram</a></li>{{/if}}
+    </ul>
+  </div>
+</nav>
+
+<main class="page">
+  {{#with (lookup albums 0)}}
+  <div class="home-hero">
+    <a href="{{albumUrl slug}}">
+      <img src="{{coverUrl this}}" alt="{{title}}"/>
+    </a>
+  </div>
+  <div class="home-meta">
+    <a href="{{albumUrl slug}}" class="home-meta__title">{{title}}</a>
+    <span class="home-meta__date">{{formatDate date}}</span>
+  </div>
+  {{#if description}}<p class="home-desc">{{description}}</p>{{/if}}
+  <div class="photo-grid">
+    {{#each photos}}{{#unless @first}}
+    <a href="{{albumUrl ../slug}}">
+      <img src="{{thumbUrl this}}" alt="{{altText}}"/>
+    </a>
+    {{/unless}}{{/each}}
+  </div>
+  {{/with}}
+</main>
+
+<footer class="site-footer">
+  © {{site.owner.name}}
+  {{#if site.social.email}} · <a href="mailto:{{site.social.email}}">{{site.social.email}}</a>{{/if}}
+</footer>
+
+{{inject-script}}
+</body>
+</html>
+</template>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!--  ALBUM PAGE                                                             -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<template data-page="album">
+<!DOCTYPE html>
+<html lang="{{site.lang}}">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>{{album.title}} — {{site.owner.name}}</title>
+  <meta name="description" content="{{album.description}}"/>
+  {{#if site.seo.faviconUrl}}<link rel="icon" href="{{site.seo.faviconUrl}}"/>{{/if}}
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav__inner">
+    <a href="/" class="site-nav__logo">{{site.owner.name}}</a>
+    <ul class="site-nav__links">
+      <li><a href="/">Work</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="page">
+  <header class="album-header">
+    <h1 class="album-header__title">{{album.title}}</h1>
+    <div class="album-header__meta">{{formatDate album.date}} · {{photoCount album}} photos</div>
+    {{#if album.description}}<p class="album-header__desc">{{album.description}}</p>{{/if}}
+  </header>
+
+  <div class="album-grid">
+    {{#each album.photos}}
+    <img src="{{imageUrl this}}" alt="{{altText}}" loading="lazy"/>
+    {{/each}}
+  </div>
+</main>
+
+<footer class="site-footer">© {{site.owner.name}}</footer>
+{{inject-script}}
+</body>
+</html>
+</template>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!--  ABOUT PAGE                                                             -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<template data-page="about">
+<!DOCTYPE html>
+<html lang="{{site.lang}}">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>About — {{site.owner.name}}</title>
+  {{#if site.seo.faviconUrl}}<link rel="icon" href="{{site.seo.faviconUrl}}"/>{{/if}}
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav__inner">
+    <a href="/" class="site-nav__logo">{{site.owner.name}}</a>
+    <ul class="site-nav__links">
+      <li><a href="/">Work</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="page">
+  <h1 class="about-name">{{site.owner.name}}</h1>
+  {{#if site.owner.bio}}<p class="about-bio">{{site.owner.bio}}</p>{{/if}}
+  {{#if site.social.email}}
+  <div class="about-contact-label">Contact</div>
+  <div class="about-contact-email"><a href="mailto:{{site.social.email}}">{{site.social.email}}</a></div>
+  {{/if}}
+</main>
+
+<footer class="site-footer">© {{site.owner.name}}</footer>
+{{inject-script}}
+</body>
+</html>
+</template>
+
+<script data-scope="global">
+  // Lazy-load images below the fold.
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.src = e.target.dataset.src || e.target.src; io.unobserve(e.target); } });
+    }, { rootMargin: '200px' });
+    document.querySelectorAll('img[loading="lazy"]').forEach(img => io.observe(img));
+  }
+</script>

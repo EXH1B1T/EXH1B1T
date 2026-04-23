@@ -1,0 +1,106 @@
+/* PhotoGrid — auto-fill grid of photo thumbnail cards */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+/* Individual photo card */
+.card {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+  cursor: default;
+}
+
+.img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Gradient overlay — hidden by default, visible on hover */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0) 60%);
+  opacity: 0;
+  transition: opacity var(--t-fast);
+  display: flex;
+  align-items: flex-end;
+  padding: 7px;
+  gap: 5px;
+}
+.card:hover .overlay { opacity: 1; }
+
+/* Action buttons row inside overlay */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+}
+
+/* "COVER" badge — top-left */
+.coverBadge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 3px 7px;
+  background: rgba(15, 15, 15, 0.9);
+  color: var(--accent);
+  font-size: 9.5px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* Shared icon button style inside overlay */
+.actionBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  background: rgba(15, 15, 15, 0.85);
+  border: 1px solid var(--border-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  transition: background var(--t-fast), color var(--t-fast);
+  flex-shrink: 0;
+}
+.actionBtn:hover { background: rgba(30, 30, 30, 0.95); }
+
+.deleteBtn {
+  composes: actionBtn;
+  color: var(--danger);
+  margin-left: auto;
+}
+.deleteBtn:hover { color: var(--danger); }
+
+.coverBtn {
+  composes: actionBtn;
+}
+
+/* Empty state — shown when album has no photos */
+.empty {
+  grid-column: 1 / -1;
+  /* BigDropzone replaces the grid entirely; this is a fallback placeholder */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--text-3);
+  font-size: 12px;
+}

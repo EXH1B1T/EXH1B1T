@@ -1,0 +1,99 @@
+/* UpdateBanner — subtle 36px banner shown under titlebar when update is ready */
+
+.banner {
+  height: 36px;
+  padding: 0 14px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  /* Subtle — does not use full accent background */
+}
+
+/* Downloading state — progress bar replaces action buttons */
+.downloading {
+  /* inherits .banner layout */
+}
+
+/* Ready state — Restart + Later buttons visible */
+.ready {
+  /* inherits .banner layout */
+}
+
+/* After dismissal the component unmounts; this class prevents flash */
+.dismissed {
+  display: none;
+}
+
+.message {
+  font-size: 12px;
+  color: var(--text-2);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.message strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.version {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text);
+}
+
+/* Thin indeterminate progress bar for download state */
+.progressBar {
+  flex: 1;
+  height: 2px;
+  background: var(--bg-3);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+  max-width: 120px;
+}
+
+.progressFill {
+  position: absolute;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  /* Used for determinate progress via inline width; indeterminate via animation */
+}
+
+.progressFill[data-indeterminate="true"] {
+  width: 40%;
+  animation: indet 1.4s ease-in-out infinite;
+}
+
+/* "Restart" — accent text, no filled background */
+.restartBtn {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: transparent;
+  transition: background var(--t-fast);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.restartBtn:hover { background: rgba(212, 245, 65, 0.08); }
+
+/* "Later" — muted dismiss */
+.laterBtn {
+  font-size: 12px;
+  color: var(--text-3);
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: transparent;
+  transition: background var(--t-fast), color var(--t-fast);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.laterBtn:hover { background: var(--bg-3); color: var(--text-2); }

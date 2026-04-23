@@ -1,0 +1,167 @@
+/* PublishButton — the Publish CTA in the sidebar + the modal it opens */
+
+.publishBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-radius: 5px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #0a0a0a;
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.publishBtn:hover { background: #defc4a; }
+
+/* ── Modal overlay ── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 100;
+}
+
+.modal {
+  width: 480px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  padding: 28px 28px 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modalTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 18px;
+}
+
+/* ── Progress bar ── */
+.progressBar {
+  height: 3px;
+  background: var(--bg-3);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 180ms linear;
+  border-radius: 3px;
+}
+
+/* ── Step list ── */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stepItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: 12.5px;
+  color: var(--text-3);
+}
+
+.stepItem.active {
+  color: var(--text);
+}
+
+.stepItem.done {
+  color: var(--text-2);
+}
+
+.stepDot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1px solid var(--border-2);
+  flex-shrink: 0;
+}
+
+.message {
+  font-size: 12.5px;
+  color: var(--text-3);
+  line-height: 1.55;
+  margin-bottom: 18px;
+}
+
+/* ── Success state ── */
+.success {
+  display: flex;
+  flex-direction: column;
+}
+
+.success > :first-child {
+  /* Checkmark circle */
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(212, 245, 65, 0.1);
+  border: 1px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+/* URL row */
+.liveUrl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 18px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+/* ── Error box ── */
+.errorBox {
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  margin-bottom: 18px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.closeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 5px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-3);
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.closeBtn:hover { background: var(--bg-4); }
