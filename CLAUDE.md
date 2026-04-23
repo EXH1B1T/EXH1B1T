@@ -42,7 +42,6 @@
 ### Auto Update — electron-updater + GitHub Releases
 - ใช้ `electron-updater` (ส่วนหนึ่งของ `electron-builder`)
 - update file host บน GitHub Releases ของ project repo — ฟรี ไม่มี server
-- เพิ่มแค่ไม่กี่บรรทัดใน `index.js` ทำงานได้เลย
 - **ข้อจำกัด:** macOS ต้องมี code signing ถึงจะ auto update ได้, Windows update ได้แต่มี SmartScreen warning ถ้าไม่มี signing
 
 ---
@@ -99,42 +98,52 @@ tag: photos-[timestamp]
 ```
 src/
 ├── main/
-│   ├── index.js          ← BrowserWindow setup
-│   ├── preload.js        ← window.api IPC bridge
-│   ├── ipc.js            ← register all handlers
-│   ├── storage.js        ← PATHS + readJson/writeJson
-│   ├── build.js          ← Handlebars engine
+│   ├── index.js          ← BrowserWindow setup + local:// protocol + autoUpdater ✓
+│   ├── preload.js        ← window.api IPC bridge ✓
+│   ├── ipc.js            ← register all handlers ✓
+│   ├── storage.js        ← PATHS + readJson/writeJson ✓
+│   ├── build.js          ← Handlebars engine ✓
 │   └── handlers/
 │       ├── auth.js       ← GitHub Device Flow OAuth ✓
 │       ├── site.js       ← site.json CRUD ✓
 │       ├── albums.js     ← album CRUD + reorder ✓
 │       ├── photos.js     ← photo add/remove/reorder ✓
 │       ├── theme.js      ← theme install/validate ✓
-│       ├── preview.js    ← local build + file:// URLs ✓
+│       ├── preview.js    ← local build + local:// URLs ✓
 │       ├── publish.js    ← full publish pipeline ✓
 │       └── github.js     ← repo setup + DNS + restore ✓
 ├── renderer/
 │   ├── main.jsx          ← React entry + routing ✓
 │   ├── styles/global.css ← design tokens ✓
 │   ├── pages/
-│   │   ├── Onboarding.jsx ← login + first-run ✓
-│   │   ├── Editor.jsx     ← main split-view ✓
-│   │   └── Settings.jsx   ← site/theme/domain/analytics ✓
+│   │   ├── Onboarding.jsx    ← login + first-run ✓
+│   │   ├── Editor.jsx        ← main split-view (sidebar + editor + preview) ✓
+│   │   └── Settings.jsx      ← site/theme/domain/analytics ✓
 │   └── components/
-│       ├── AlbumList.jsx     ✓ (needs drag reorder)
-│       ├── AlbumEditor.jsx   ✓ (needs caption/altText editor)
-│       ├── PhotoGrid.jsx     ✓ (needs drag reorder)
-│       ├── PhotoUpload.jsx   ✓
-│       ├── PreviewPane.jsx   ✓
-│       ├── PublishButton.jsx ✓
-│       ├── ThemePicker.jsx   ✓
-│       └── DnsStatus.jsx     ✓
+│       ├── AlbumList.jsx         ✓ (needs drag reorder)
+│       ├── AlbumEditor.jsx       ✓ (needs caption/altText editor)
+│       ├── HomeEditor.jsx        ✓ — layout picker + headline/intro + album order
+│       ├── AboutEditor.jsx       ✓ — portrait upload + bio + exhibitions
+│       ├── NavEditor.jsx         ✓ — menu style + visibility toggles + custom links
+│       ├── PhotoGrid.jsx         ✓ (needs drag reorder)
+│       ├── PhotoUpload.jsx       ✓
+│       ├── PreviewPane.jsx       ✓ — webview, desktop/mobile frame
+│       ├── PublishButton.jsx     ✓
+│       ├── ThemePicker.jsx       ✓
+│       ├── DnsStatus.jsx         ✓
+│       ├── UpdateBanner.jsx      ✓ — auto-update banner (downloading / ready states)
+│       ├── Toggle.jsx            ✓ — iOS-style toggle switch
+│       ├── Btn.jsx               ✓ — reusable button
+│       ├── Field.jsx             ✓ — reusable form field
+│       ├── Spinner.jsx           ✓ — loading spinner
+│       ├── Icon.jsx              ✓
+│       └── Logo.jsx              ✓
 └── shared/
     └── types.js          ← constants + defaults ✓
 
 resources/
 └── themes/
-    └── default.html      ← TODO: สร้าง default theme ตาม spec
+    └── default.html      ✓ — editorial/minimal theme (Cormorant Garamond + Inter)
 ```
 
 ---
@@ -144,8 +153,9 @@ resources/
 renderer เรียก main process ผ่าน:
 
 ```js
-// Auth
-window.api.auth.startOAuth()         → { ok, user_code, verification_uri, user }
+// Auth — Device Flow: requestDeviceCode ก่อน แล้ว poll จนได้ token
+window.api.auth.requestDeviceCode()  → { ok, user_code, verification_uri, expires_in, interval }
+window.api.auth.pollToken()          → { ok, user } | { ok: false, error: 'authorization_pending' | ... }
 window.api.auth.getUser()            → { login, name, avatar_url } | null
 window.api.auth.logout()             → { ok }
 
@@ -177,7 +187,7 @@ window.api.theme.delete(name)        → { ok }
 
 // Preview
 window.api.preview.build(context?)   → { ok }
-window.api.preview.getUrl(page, albumSlug?) → file:// URL
+window.api.preview.getUrl(page, albumSlug?) → local:// URL
 
 // Publish
 window.api.publish.start()           → { ok, url } | { ok: false, error }
@@ -189,6 +199,18 @@ window.api.github.checkRepo()        → { ok, repoExists, hasData, repoName }
 window.api.github.setupRepo()        → { ok, repoName, url }
 window.api.github.checkDns(domain)   → { ok, status, message }
 window.api.github.restoreFromRepo()  → { ok, filesRestored }
+
+// Dialog
+window.api.dialog.openImages()       → string[] | null  (absolute file paths)
+
+// Utils — Electron 32+ ใช้ webUtils แทน file.path
+window.api.utils.getPathForFile(file) → string  (absolute path จาก drag-dropped File object)
+
+// Updater — events จาก main process
+window.api.updater.onAvailable(cb)   → cb({ version, ... })
+window.api.updater.onProgress(cb)    → cb({ percent, ... })
+window.api.updater.onReady(cb)       → cb({ version, ... })
+window.api.updater.install()         → void  (restart + install)
 ```
 
 ---
@@ -227,7 +249,10 @@ window.api.github.restoreFromRepo()  → { ok, filesRestored }
       "width": 0,
       "height": 0,
       "order": 0,
-      "url": null
+      "url": null,
+      "localPath": null,
+      "thumbLocalPath": null,
+      "thumbUrl": null
     }
   ]
 }
@@ -238,19 +263,24 @@ window.api.github.restoreFromRepo()  → { ok, filesRestored }
 ## Design Tokens (global.css)
 
 ```css
---bg:          #0f0f0f
---bg-2:        #1a1a1a
---bg-3:        #242424
+--bg:          #0f0f0f    /* background หลัก */
+--bg-2:        #1a1a1a    /* panel, card */
+--bg-3:        #242424    /* input, button */
+--bg-4:        #2c2c2c    /* input focus */
 --border:      #2e2e2e
 --border-2:    #3a3a3a
 --text:        #e8e8e8
---text-2:      #888
---text-3:      #555
---accent:      #d4f541   /* lime */
+--text-2:      #888       /* secondary */
+--text-3:      #555       /* placeholder, hint */
+--accent:      #d4f541    /* lime — primary action */
+--accent-dim:  #a3c032    /* accent hover/pressed */
 --danger:      #ff4d4d
 --success:     #4dff91
 --sidebar-w:   240px
 --titlebar-h:  38px
+--t-fast:      120ms ease
+--font-sans:   Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
+--font-mono:   "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace
 ```
 
 ---
@@ -259,11 +289,29 @@ window.api.github.restoreFromRepo()  → { ok, filesRestored }
 
 Theme = 1 ไฟล์ `.html` ที่มี:
 - HTML comment metadata (`@portfolio-theme`, `compatibility: portfolio-spec@1.4`)
-- `<template data-page="home|album|about">`
+- `<template data-page="home|album|about">` — แต่ละ template มี `{{inject-style}}` ใน `<head>`
 - `<style data-scope="global">`
 - `<script data-scope="global">` (optional)
-- inject keywords: `{{inject-style}}`, `{{inject-script}}`
-- Handlebars helpers: `formatDate`, `albumUrl`, `imageUrl`, `thumbUrl`, `coverUrl`, `aspectRatio`, `photoCount`, `ifLang`, `ifOption`
+- inject keywords: `{{inject-style}}`, `{{inject-script}}` — ใช้ string replace ใน build.js ไม่ใช่ Handlebars
+- Handlebars helpers: `formatDate`, `albumUrl`, `imageUrl`, `thumbUrl`, `coverUrl`, `aspectRatio`, `photoCount`, `ifLang`, `ifOption`, `eq`
+
+**default theme:** editorial/minimal — Cormorant Garamond + Inter, masonry grid, lightbox, sticky nav with backdrop blur
+
+---
+
+## Preview System
+
+- Build mode: `preview` — ใช้ `local://` URLs แทน GitHub Releases URLs
+- `local://` custom protocol: registered เป็น privileged standard scheme ใน `index.js`
+  - Chromium parses `local:///Users/foo` → hostname=`users`, pathname=`/foo`
+  - Handler reconstructs: `/${hostname}${pathname}` = `/users/foo`
+- WebView partition `persist:preview` — ต้อง register `local://` handler บน session นี้แยกต่างหาก
+  - ทำใน `index.js` ผ่าน `session.fromPartition('persist:preview').protocol.handle('local', ...)`
+  - และ `app.on('session-created', ...)` สำหรับ session ที่สร้างทีหลัง
+- Webview sizing ใช้ **flex chain** ตลอด (ไม่ใช้ `position: absolute; inset: 0`) เพราะ Electron webview ต้องการ concrete height ผ่าน flex ถึงจะ render internal iframe ได้เต็ม
+- Preview panel มี Desktop/Mobile toggle — mobile ใช้ 390px centered frame
+- Rebuild strategy: แก้ site info/theme → rebuild all | แก้ album → rebuild album page only
+- Google Analytics ไม่ inject ใน preview mode
 
 ---
 
@@ -284,17 +332,8 @@ Progress events: `loading → images → uploading → building → seo → push
 
 **หมายเหตุสำคัญ:**
 - GitHub Pages propagate 1–5 นาทีหลัง push — UI ต้องแจ้ง user
-- Incremental publish: track รูปที่เปลี่ยนด้วย hash เพื่อ upload เฉพาะที่เปลี่ยน
+- Incremental publish: track รูปที่เปลี่ยนด้วย hash เพื่อ upload เฉพาะที่เปลี่ยน (TODO)
 - First publish อาจนาน 5–10 นาทีถ้ามีรูปเยอะ — UX ต้องรองรับ
-
----
-
-## Preview System
-
-- Build mode: `preview` — ใช้ `file://` local paths แทน GitHub Releases URLs
-- Rebuild strategy: แก้ site info/theme → rebuild all | แก้ album → rebuild album page only
-- WebView แสดงผล `file://` URL จาก temp preview dir
-- Google Analytics ไม่ inject ใน preview mode
 
 ---
 
@@ -302,9 +341,10 @@ Progress events: `loading → images → uploading → building → seo → push
 
 ```
 Login with GitHub (Device Flow — ไม่ต้องมี server)
+→ requestDeviceCode() → แสดง user_code + verification_uri
 → user กรอก code ใน browser
-→ app poll จนได้ token
-→ checkRepo:
+→ pollToken() จนได้ token (หรือ expired)
+→ checkRepo():
   Case A: ไม่มี repo           → setupRepo() → สร้างใหม่ + เปิด Pages
   Case B: มี repo + _data/     → ถาม restore หรือเริ่มใหม่
   Case C: มี repo ไม่มี _data/ → ถาม overwrite หรือยกเลิก
@@ -312,77 +352,45 @@ Login with GitHub (Device Flow — ไม่ต้องมี server)
 
 ---
 
----
-
 ## Auto Update
 
 ใช้ `electron-updater` + GitHub Releases ของ project repo — ไม่มี server ไม่มีค่าใช้จ่าย
 
-### วิธีทำงาน
-```
-app เปิด
-→ autoUpdater.checkForUpdatesAndNotify()
-→ เช็ค GitHub Releases ของ exh1b1t repo
-→ พบ version ใหม่ → download ใน background
-→ แจ้ง user → user กด restart → ติดตั้งทันที
-```
-
-### Config ที่ต้องเพิ่มใน package.json
-```json
-{
-  "build": {
-    "publish": {
-      "provider": "github",
-      "owner": "YOUR_GITHUB_USERNAME",
-      "repo": "exh1b1t"
-    }
-  }
-}
-```
-
-### Code ที่ต้องเพิ่มใน index.js
-```javascript
-const { autoUpdater } = require('electron-updater')
-
-app.whenReady().then(async () => {
-  await ensureAppDirs()
-  setupIpcHandlers()
-  createWindow()
-  autoUpdater.checkForUpdatesAndNotify()  // ← เพิ่มบรรทัดนี้
-})
-```
-
-### ข้อจำกัด
-- **macOS** — ต้องมี code signing ถึงจะ auto update ได้ (Apple Developer $99/ปี)
-- **Windows** — update ได้แต่มี SmartScreen warning ถ้าไม่มี EV certificate
-- **Open source workaround** — README อธิบายให้ user bypass warning ได้, หรือรอ community contribute signing
+- `autoUpdater.checkForUpdatesAndNotify()` เรียกใน `app.whenReady()` (production เท่านั้น)
+- Events ส่งผ่าน IPC ไปยัง renderer → `UpdateBanner.jsx` แสดงผล
+- **macOS** — ต้องมี code signing (Apple Developer $99/ปี)
+- **Windows** — SmartScreen warning ถ้าไม่มี EV cert
 
 ---
 
 ## Known Issues & TODO
 
 ### High Priority
-- [ ] `resources/themes/default.html` — default theme ตาม spec v1.4
-- [ ] CSS Modules สำหรับทุก component (`.module.css`)
 - [ ] Drag & drop reorder — AlbumList และ PhotoGrid
 - [ ] Photo caption/altText inline editor ใน PhotoGrid
-- [ ] `index.html` + Vite config สำหรับ renderer
 - [ ] Incremental publish — track รูปที่เปลี่ยนด้วย hash
 
 ### Medium Priority
-- [ ] Photo local path ใน preview mode (PhotoGrid แสดงรูปจาก file://)
 - [ ] Error handling ใน UI — แปล error เป็นภาษาคน
 - [ ] Empty states (ยังไม่มี album, ยังไม่มีรูป)
 - [ ] GitHub Pages propagation delay — แจ้ง user หลัง publish สำเร็จ
-- [ ] Auto update UI — แจ้ง user เมื่อมีอัพเดทใหม่ใน renderer
+- [ ] GitHub Releases cleanup — ลบ release เก่าเมื่อ publish ใหม่
 
 ### Low Priority
 - [ ] Theme options UI (color picker, select, toggle ใน Settings)
 - [ ] Keyboard shortcuts
 - [ ] App icon + installer
 - [ ] Code signing — macOS: Apple Developer $99/ปี, Windows: EV cert
-- [ ] GitHub Releases cleanup — ลบ release เก่าเมื่อ publish ใหม่
-- [ ] Mobile preview toggle ใน PreviewPane
 - [ ] In-app GitHub signup guide สำหรับ new users
+
+### Completed ✓
+- [x] `resources/themes/default.html` — editorial/minimal theme
+- [x] CSS Modules ครบทุก component
+- [x] Drag & drop photo upload (`webUtils.getPathForFile` แทน deprecated `file.path`)
+- [x] Auto update UI — `UpdateBanner.jsx`
+- [x] Desktop/Mobile preview toggle
+- [x] `local://` protocol for local photo preview in webview
+- [x] HomeEditor, AboutEditor, NavEditor panels
+- [x] `index.html` + Vite config (renderer dev server at localhost:5173)
 
 ---
