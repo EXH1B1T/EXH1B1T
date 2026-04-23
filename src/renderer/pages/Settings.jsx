@@ -18,11 +18,15 @@ const DNS_IPS = ['185.199.108.153', '185.199.109.153', '185.199.110.153', '185.1
 export default function Settings({ onBack }) {
   const [tab, setTab]       = useState('site')
   const [site, setSite]     = useState(null)
+  const [user, setUser]     = useState(null)
   const [saving, setSaving] = useState(false)
   const saveTimer           = useRef(null)
 
   useEffect(() => {
-    window.api?.site.get().then(setSite)
+    Promise.all([
+      window.api?.site.get(),
+      window.api?.auth.getUser(),
+    ]).then(([si, u]) => { setSite(si); setUser(u) })
     return () => clearTimeout(saveTimer.current)
   }, [])
 
@@ -67,7 +71,7 @@ export default function Settings({ onBack }) {
         <div className={s.content}>
           {tab === 'site'      && <SiteTab site={site} patch={patch} />}
           {tab === 'theme'     && <ThemePicker />}
-          {tab === 'domain'    && <DomainTab site={site} patch={patch} />}
+          {tab === 'domain'    && <DomainTab site={site} user={user} patch={patch} />}
           {tab === 'analytics' && <AnalyticsTab site={site} patch={patch} />}
         </div>
       </div>
@@ -133,7 +137,7 @@ function SiteTab({ site, patch }) {
   )
 }
 
-function DomainTab({ site, patch }) {
+function DomainTab({ site, user, patch }) {
   const [custom, setCustom]   = useState(site?.customDomain ?? '')
   const [dnsStatus, setDns]   = useState('idle')
   const [copied, setCopied]   = useState(false)
@@ -153,7 +157,7 @@ function DomainTab({ site, patch }) {
     setTimeout(() => setCopied(false), 1400)
   }
 
-  const currentUrl = site ? `${site.owner?.login ?? 'username'}.github.io` : ''
+  const currentUrl = user ? `${user.login}.github.io` : ''
 
   return (
     <>

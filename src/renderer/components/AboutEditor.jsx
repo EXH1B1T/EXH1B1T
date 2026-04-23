@@ -37,7 +37,8 @@ export default function AboutEditor({ site, onSave }) {
   const handlePortraitPick = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const path = file.path ?? ''
+    // webUtils.getPathForFile replaces deprecated file.path (Electron 32+)
+    const path = window.api?.utils.getPathForFile(file) ?? ''
     if (path) patchAbout({ portrait: path })
   }
 
@@ -92,7 +93,7 @@ export default function AboutEditor({ site, onSave }) {
             <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePortraitPick} />
             {portrait ? (
               <img
-                src={portrait.startsWith('/') ? `local://${portrait.slice(1)}` : portrait}
+                src={portrait.startsWith('/') ? `local://${portrait}` : portrait}
                 className={s.portraitImg}
                 alt="Portrait"
               />

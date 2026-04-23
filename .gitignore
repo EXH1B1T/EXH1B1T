@@ -1,7 +1,7 @@
 # Dependencies
 node_modules/
 
-# Build outputs (Electron Builder / Electron Forge)
+# Build outputs (Electron Builder)
 dist/
 out/
 release/
@@ -12,6 +12,9 @@ release/
 *.zip
 *.deb
 *.rpm
+*.blockmap
+builder-debug.yml
+latest*.yml
 
 # Log files
 npm-debug.log*
@@ -26,6 +29,14 @@ logs/
 .env.development.local
 .env.test.local
 .env.production.local
+electron-builder.env
+
+# Code signing certificates — never commit these
+*.p12
+*.pem
+*.cer
+*.mobileprovision
+*.provisionprofile
 
 # IDEs and Editors
 .vscode/
@@ -40,5 +51,8 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Optional: Local configuration for Electron Forge
+# Claude Code workspace (local dev tool — not part of project)
+.claude/
+
+# Local app data directory
 .data/
