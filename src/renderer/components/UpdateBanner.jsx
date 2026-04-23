@@ -11,6 +11,7 @@ export default function UpdateBanner() {
     window.api?.updater.onProgress((p) => {
       setState('downloading')
       setProgress(p.percent ?? 0)
+      setVersion(p.version ?? '')
     })
     window.api?.updater.onReady((info) => {
       setState('ready')
