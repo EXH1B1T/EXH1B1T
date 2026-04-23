@@ -31,7 +31,7 @@ function get(url, token) {
     const u = new URL(url)
     https.get({
       hostname: u.hostname, path: u.pathname + u.search,
-      headers: { 'Authorization': `Bearer ${token}`, 'User-Agent': 'EXHBT-App', 'Accept': 'application/json' },
+      headers: { 'Authorization': `Bearer ${token}`, 'User-Agent': 'EXH1B1T-App', 'Accept': 'application/json' },
     }, (res) => {
       let raw = ''
       res.on('data', c => raw += c)

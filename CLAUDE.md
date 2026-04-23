@@ -1,4 +1,4 @@
-# CLAUDE.md — Exhbt
+# CLAUDE.md — EXH1B1T
 
 > อ่านไฟล์นี้ก่อนทำงานทุกครั้ง — เป็น source of truth ของ project
 
@@ -6,7 +6,7 @@
 
 ## App คืออะไร
 
-**Exhbt** — Electron desktop app สำหรับ non-tech user
+**EXH1B1T** — Electron desktop app สำหรับ non-tech user
 สร้าง photo portfolio website ฟรี โดย host บน GitHub Pages
 
 ผู้ใช้หลัก: photographer, designer, creative ที่ไม่รู้ coding
@@ -63,9 +63,9 @@ GitHub Repo: [username].github.io  (main branch)
 ├── favicon.ico      — optional
 └── CNAME            — optional, custom domain
 
-GitHub Releases (exhbt repo)  — app updates
-  v1.0.0/Exhbt-1.0.0.dmg
-  v1.0.0/Exhbt-Setup-1.0.0.exe
+GitHub Releases (exh1b1t repo)  — app updates
+  v1.0.0/EXH1B1T-1.0.0.dmg
+  v1.0.0/EXH1B1T-Setup-1.0.0.exe
   v1.0.0/latest-mac.yml
   v1.0.0/latest.yml
 
@@ -322,7 +322,7 @@ Login with GitHub (Device Flow — ไม่ต้องมี server)
 ```
 app เปิด
 → autoUpdater.checkForUpdatesAndNotify()
-→ เช็ค GitHub Releases ของ exhbt repo
+→ เช็ค GitHub Releases ของ exh1b1t repo
 → พบ version ใหม่ → download ใน background
 → แจ้ง user → user กด restart → ติดตั้งทันที
 ```
@@ -334,7 +334,7 @@ app เปิด
     "publish": {
       "provider": "github",
       "owner": "YOUR_GITHUB_USERNAME",
-      "repo": "exhbt"
+      "repo": "exh1b1t"
     }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "exhbt",
+  "name": "exh1b1t",
   "version": "1.0.0",
   "description": "Create a free photo portfolio hosted on GitHub Pages",
   "main": "src/main/index.js",
@@ -25,8 +25,8 @@
     "vite": "^7.0.0"
   },
   "build": {
-    "appId": "com.exhbt.app",
-    "productName": "EXHBT",
+    "appId": "com.exh1b1t.app",
+    "productName": "EXH1B1T",
     "mac": {
       "category": "public.app-category.photography",
       "target": "dmg"
@@ -37,7 +37,7 @@
     "publish": {
       "provider": "github",
       "owner": "YOUR_GITHUB_USERNAME",
-      "repo": "exhbt"
+      "repo": "exh1b1t"
     }
   }
 }

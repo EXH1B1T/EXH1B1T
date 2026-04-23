@@ -51,7 +51,7 @@ export default function Editor({ onSettings }) {
   useEffect(() => {
     if (!dragging) return
     const onMove = (e) => {
-      const main = document.getElementById('exhbt-main')
+      const main = document.getElementById('exh1b1t-main')
       if (!main) return
       const rect = main.getBoundingClientRect()
       setPreviewW(Math.max(320, Math.min(680, rect.right - e.clientX)))
@@ -125,7 +125,7 @@ export default function Editor({ onSettings }) {
       </div>
 
       {/* ── Main: editor + preview ── */}
-      <div id="exhbt-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div id="exh1b1t-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <UpdateBanner />
 
         <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>

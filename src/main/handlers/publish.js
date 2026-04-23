@@ -9,7 +9,7 @@ const { buildSite } = require('../build')
 const { pushToGitHub } = require('./github')
 
 function getOctokit() {
-  return new Octokit({ auth: store.get('token'), userAgent: 'EXHBT-App' })
+  return new Octokit({ auth: store.get('token'), userAgent: 'EXH1B1T-App' })
 }
 
 function repoName(login) { return `${login}.github.io` }
@@ -24,7 +24,7 @@ async function publishSite(sendProgress) {
 
   const octokit = getOctokit()
   const repo = repoName(user.login)
-  const distDir = path.join(os.tmpdir(), `exhbt-publish-${Date.now()}`)
+  const distDir = path.join(os.tmpdir(), `exh1b1t-publish-${Date.now()}`)
   await fs.mkdir(distDir, { recursive: true })
 
   try {
@@ -93,7 +93,7 @@ async function uploadPhotos(octokit, owner, repo, albums, sendProgress) {
     const { data } = await octokit.repos.createRelease({
       owner, repo, tag_name: tag,
       name: `Photos ${new Date().toISOString().slice(0, 10)}`,
-      body: 'Photo assets uploaded by EXHBT',
+      body: 'Photo assets uploaded by EXH1B1T',
       draft: false,
     })
     release = data

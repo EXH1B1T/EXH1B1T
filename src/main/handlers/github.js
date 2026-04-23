@@ -8,7 +8,7 @@ const { DEFAULTS } = require('../../shared/types')
 function getOctokit() {
   const token = store.get('token')
   if (!token) throw new Error('Not authenticated')
-  return new Octokit({ auth: token, userAgent: 'EXHBT-App' })
+  return new Octokit({ auth: token, userAgent: 'EXH1B1T-App' })
 }
 
 function repoName(login) {
@@ -22,7 +22,7 @@ async function checkRepo() {
 
   try {
     const { data } = await octokit.repos.get({ owner: user.login, repo })
-    // Check if _data/ exists (indicates an EXHBT-built site)
+    // Check if _data/ exists (indicates an EXH1B1T-built site)
     let hasData = false
     try {
       await octokit.repos.getContent({ owner: user.login, repo, path: '_data/site.json' })
@@ -46,7 +46,7 @@ async function setupRepo() {
   } catch {
     await octokit.repos.createForAuthenticatedUser({
       name: repo,
-      description: 'My portfolio — built with EXHBT',
+      description: 'My portfolio — built with EXH1B1T',
       private: false,
       auto_init: true,
     })
