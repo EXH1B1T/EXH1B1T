@@ -23,6 +23,7 @@ export default function Editor({ onSettings }) {
   const [site, setSite]             = useState(null)
   const [previewW, setPreviewW]     = useState(460)
   const [dragging, setDragging]     = useState(false)
+  const mainRef                     = useRef(null)
   const [previewDevice, setDevice]  = useState('desktop')
 
   useEffect(() => {
@@ -69,22 +70,25 @@ export default function Editor({ onSettings }) {
     }
   }
 
-  // Resize handle drag
-  useEffect(() => {
+  // Resize handle — use pointer capture so pointerup is always received,
+  // even when the cursor leaves the window mid-drag.
+  const handleResizePointerDown = (e) => {
+    e.preventDefault()
+    e.currentTarget.setPointerCapture(e.pointerId)
+    setDragging(true)
+  }
+  const handleResizePointerMove = (e) => {
     if (!dragging) return
-    const onMove = (e) => {
-      const main = document.getElementById('exh1b1t-main')
-      if (!main) return
-      const rect = main.getBoundingClientRect()
-      // Keep at least 300px for the editor panel; preview min is 280px
-      const maxW = rect.width - 300
-      setPreviewW(Math.max(280, Math.min(maxW, rect.right - e.clientX)))
-    }
-    const onUp = () => setDragging(false)
-    window.addEventListener('mousemove', onMove)
-    window.addEventListener('mouseup', onUp)
-    return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp) }
-  }, [dragging])
+    const main = mainRef.current
+    if (!main) return
+    const rect = main.getBoundingClientRect()
+    const maxW = rect.width - 300
+    setPreviewW(Math.max(280, Math.min(maxW, rect.right - e.clientX)))
+  }
+  const handleResizePointerUp = (e) => {
+    e.currentTarget.releasePointerCapture(e.pointerId)
+    setDragging(false)
+  }
 
   const selectedAlbum = albums.find((a) => a.slug === selectedSlug) ?? null
   const currentUrl = user ? `${user.login}.github.io` : ''
@@ -149,7 +153,7 @@ export default function Editor({ onSettings }) {
       </div>
 
       {/* ── Main: editor + preview ── */}
-      <div id="exh1b1t-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div ref={mainRef} style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <UpdateBanner />
 
         <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
@@ -171,8 +175,10 @@ export default function Editor({ onSettings }) {
 
           {/* Resize handle */}
           <div
-            onMouseDown={(e) => { e.preventDefault(); setDragging(true) }}
             className={s.resizeHandle}
+            onPointerDown={handleResizePointerDown}
+            onPointerMove={handleResizePointerMove}
+            onPointerUp={handleResizePointerUp}
             style={{ cursor: dragging ? 'col-resize' : undefined }}
           />
 
