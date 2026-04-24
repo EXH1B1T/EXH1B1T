@@ -26,13 +26,13 @@ export default function NavEditor({ site, albums, onSave }) {
 
   useEffect(() => () => clearTimeout(saveTimer.current), [])
 
-  const patchNav = useCallback((update) => {
+  const patchNav = useCallback((update, immediate = false) => {
     setSaving(true)
     clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
       const next = { ...site, nav: { ...site?.nav, ...update } }
       await window.api?.site.save(next)
-      onSave?.(next)
+      onSave?.(next, immediate)
       setSaving(false)
     }, 600)
   }, [site, onSave])
@@ -45,7 +45,7 @@ export default function NavEditor({ site, albums, onSave }) {
     const next = hiddenAlbums.includes(slug)
       ? hiddenAlbums.filter((s) => s !== slug)
       : [...hiddenAlbums, slug]
-    patchNav({ hiddenAlbums: next })
+    patchNav({ hiddenAlbums: next }, true)
   }
 
   // ── Album drag reorder ────────────────────────────────────────────────────
@@ -121,7 +121,7 @@ export default function NavEditor({ site, albums, onSave }) {
                 <button
                   key={key}
                   className={`${s.styleCard} ${sel ? s.cardSel : ''}`}
-                  onClick={() => patchNav({ style: key })}
+                  onClick={() => patchNav({ style: key }, true)}
                 >
                   <div className={s.cardIcon}>
                     {key === 'sidebar' ? <SidebarPreview /> : <HamburgerPreview />}
@@ -144,7 +144,7 @@ export default function NavEditor({ site, albums, onSave }) {
             <span className={s.rowLabel}>Home</span>
             <Toggle
               checked={nav.homeVisible !== false}
-              onChange={(v) => patchNav({ homeVisible: v })}
+              onChange={(v) => patchNav({ homeVisible: v }, true)}
             />
           </div>
 
@@ -154,7 +154,7 @@ export default function NavEditor({ site, albums, onSave }) {
             <span className={s.rowLabel}>About</span>
             <Toggle
               checked={nav.aboutVisible !== false}
-              onChange={(v) => patchNav({ aboutVisible: v })}
+              onChange={(v) => patchNav({ aboutVisible: v }, true)}
             />
           </div>
 

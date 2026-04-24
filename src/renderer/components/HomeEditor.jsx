@@ -21,13 +21,13 @@ export default function HomeEditor({ site, albums, onSave }) {
 
   useEffect(() => () => clearTimeout(saveTimer.current), [])
 
-  const patch = useCallback((update) => {
+  const patch = useCallback((update, immediate = false) => {
     setSaving(true)
     clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
       const next = { ...site, home: { ...site?.home, ...update } }
       await window.api?.site.save(next)
-      onSave?.(next)
+      onSave?.(next, immediate)
       setSaving(false)
     }, 600)
   }, [site, onSave])
@@ -77,7 +77,7 @@ export default function HomeEditor({ site, albums, onSave }) {
                 <button
                   key={key}
                   className={`${s.layoutCard} ${sel ? s.cardSel : ''}`}
-                  onClick={() => patch({ layout: key })}
+                  onClick={() => patch({ layout: key }, true)}
                 >
                   <div className={s.cardIcon}>
                     {key === 'grid'

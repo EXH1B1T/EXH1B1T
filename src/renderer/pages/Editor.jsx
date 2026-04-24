@@ -69,10 +69,13 @@ export default function Editor({ onSettings }) {
     setSite(si)
   }, [])
 
-  const handleSaveSite = useCallback((next) => {
+  // immediate=true → discrete action (card click, toggle) → rebuild preview now
+  // immediate=false → text input change → rebuild preview after debounce
+  const handleSaveSite = useCallback((next, immediate = false) => {
     setSite(next)
-    bumpPreview()
-  }, [bumpPreview])
+    if (immediate) bumpPreviewNow()
+    else bumpPreview()
+  }, [bumpPreview, bumpPreviewNow])
 
   const handleReorderAlbums = async (slugs) => {
     await window.api?.albums.reorder(slugs)
