@@ -23,8 +23,11 @@ export default function Editor({ onSettings }) {
   const [site, setSite]             = useState(null)
   const [previewW, setPreviewW]     = useState(() => Math.round(window.innerWidth * 0.40))
   const [dragging, setDragging]     = useState(false)
-  const mainRef                     = useRef(null)
   const [previewDevice, setDevice]  = useState('desktop')
+  const [previewKey, setPreviewKey] = useState(0)
+  const mainRef                     = useRef(null)
+
+  const bumpPreview = useCallback(() => setPreviewKey((k) => k + 1), [])
 
   useEffect(() => {
     Promise.all([
@@ -43,7 +46,8 @@ export default function Editor({ onSettings }) {
   const reloadAlbums = useCallback(async () => {
     const list = await window.api?.albums.list()
     setAlbums(list ?? [])
-  }, [])
+    bumpPreview()
+  }, [bumpPreview])
 
   const reloadSite = useCallback(async () => {
     const si = await window.api?.site.get()
@@ -52,7 +56,8 @@ export default function Editor({ onSettings }) {
 
   const handleSaveSite = useCallback((next) => {
     setSite(next)
-  }, [])
+    bumpPreview()
+  }, [bumpPreview])
 
   const handleReorderAlbums = async (slugs) => {
     await window.api?.albums.reorder(slugs)
@@ -202,6 +207,7 @@ export default function Editor({ onSettings }) {
               page={previewPage}
               albumSlug={previewAlbumSlug}
               device={previewDevice}
+              rebuildKey={previewKey}
             />
           </div>
         </div>

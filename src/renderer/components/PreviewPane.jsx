@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import s from './PreviewPane.module.css'
 
-export default function PreviewPane({ page, albumSlug, device = 'desktop' }) {
+export default function PreviewPane({ page, albumSlug, device = 'desktop', rebuildKey }) {
   const webviewRef = useRef(null)
 
   useEffect(() => {
@@ -14,7 +14,7 @@ export default function PreviewPane({ page, albumSlug, device = 'desktop' }) {
       }
     })
     return () => { cancelled = true }
-  }, [page, albumSlug])
+  }, [page, albumSlug, rebuildKey])
 
   const isMobile = device === 'mobile'
 
