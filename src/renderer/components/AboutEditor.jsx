@@ -116,7 +116,6 @@ export default function AboutEditor({ site, onSave }) {
           <div className={s.fields}>
             <Field label="Name">
               <input
-                key={owner.name}
                 defaultValue={owner.name ?? ''}
                 placeholder="Your full name"
                 onChange={(e) => patchOwner({ name: e.target.value })}
@@ -124,7 +123,6 @@ export default function AboutEditor({ site, onSave }) {
             </Field>
             <Field label="Bio" hint="Shown as your About page intro paragraph">
               <textarea
-                key={owner.bio}
                 rows={4}
                 defaultValue={owner.bio ?? ''}
                 placeholder="Write a short bio about yourself…"
@@ -133,7 +131,6 @@ export default function AboutEditor({ site, onSave }) {
             </Field>
             <Field label="Contact Email">
               <input
-                key={site.social?.email}
                 type="email"
                 defaultValue={site.social?.email ?? ''}
                 placeholder="hello@example.com"

@@ -98,7 +98,6 @@ export default function HomeEditor({ site, albums, onSave }) {
           <div className={s.fields}>
             <Field label="Headline">
               <input
-                key={home.headline}
                 defaultValue={home.headline ?? ''}
                 placeholder="Your name or tagline"
                 onChange={(e) => patch({ headline: e.target.value })}
@@ -106,7 +105,6 @@ export default function HomeEditor({ site, albums, onSave }) {
             </Field>
             <Field label="Subhead">
               <input
-                key={home.subhead}
                 defaultValue={home.subhead ?? ''}
                 placeholder="Photographer · City"
                 onChange={(e) => patch({ subhead: e.target.value })}
@@ -114,7 +112,6 @@ export default function HomeEditor({ site, albums, onSave }) {
             </Field>
             <Field label="Intro">
               <textarea
-                key={home.intro}
                 rows={3}
                 defaultValue={home.intro ?? ''}
                 placeholder="A short intro paragraph shown above the albums…"
