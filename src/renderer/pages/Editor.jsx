@@ -76,7 +76,9 @@ export default function Editor({ onSettings }) {
       const main = document.getElementById('exh1b1t-main')
       if (!main) return
       const rect = main.getBoundingClientRect()
-      setPreviewW(Math.max(320, Math.min(680, rect.right - e.clientX)))
+      // Keep at least 300px for the editor panel; preview min is 280px
+      const maxW = rect.width - 300
+      setPreviewW(Math.max(280, Math.min(maxW, rect.right - e.clientX)))
     }
     const onUp = () => setDragging(false)
     window.addEventListener('mousemove', onMove)
@@ -92,7 +94,7 @@ export default function Editor({ onSettings }) {
   const previewAlbumSlug = selectedSlug?.startsWith('__') ? null : selectedSlug
 
   return (
-    <div className={s.layout} style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
+    <div className={s.layout} style={{ display: 'flex', flexDirection: 'row', flex: 1, userSelect: dragging ? 'none' : undefined }}>
       {/* ── Sidebar ── */}
       <div className={s.sidebar}>
         {/* Empty drag region — macOS traffic lights sit here */}
@@ -170,10 +172,8 @@ export default function Editor({ onSettings }) {
           {/* Resize handle */}
           <div
             onMouseDown={(e) => { e.preventDefault(); setDragging(true) }}
-            style={{
-              width: 4, cursor: 'col-resize', background: 'transparent',
-              borderLeft: '1px solid var(--border)', flexShrink: 0, zIndex: 2,
-            }}
+            className={s.resizeHandle}
+            style={{ cursor: dragging ? 'col-resize' : undefined }}
           />
 
           {/* Preview panel */}

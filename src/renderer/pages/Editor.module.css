@@ -79,6 +79,41 @@
   border-right: 1px solid var(--border);
 }
 
+/* ── Resize handle ── */
+.resizeHandle {
+  width: 5px;
+  flex-shrink: 0;
+  position: relative;
+  cursor: col-resize;
+  background: transparent;
+  border-left: 1px solid var(--border);
+  z-index: 2;
+  transition: background var(--t-fast);
+}
+
+.resizeHandle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 3px;
+  height: 24px;
+  border-left: 1px solid var(--border-2);
+  border-right: 1px solid var(--border-2);
+  border-radius: 1px;
+  opacity: 0;
+  transition: opacity var(--t-fast);
+}
+
+.resizeHandle:hover {
+  background: var(--bg-3);
+}
+
+.resizeHandle:hover::after {
+  opacity: 1;
+}
+
 /* ── Preview panel ── */
 .previewPanel {
   flex-shrink: 0;
