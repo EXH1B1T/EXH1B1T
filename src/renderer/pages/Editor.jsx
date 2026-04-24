@@ -26,8 +26,23 @@ export default function Editor({ onSettings }) {
   const [previewDevice, setDevice]  = useState('desktop')
   const [previewKey, setPreviewKey] = useState(0)
   const mainRef                     = useRef(null)
+  const previewTimer                = useRef(null)
 
-  const bumpPreview = useCallback(() => setPreviewKey((k) => k + 1), [])
+  // Debounced: used after text-field saves — waits 1.2 s after the last save
+  // so the webview doesn't flash on every keystroke while the user is typing.
+  const bumpPreview = useCallback(() => {
+    clearTimeout(previewTimer.current)
+    previewTimer.current = setTimeout(() => setPreviewKey((k) => k + 1), 1200)
+  }, [])
+
+  // Immediate: used after discrete actions (photo add/remove/reorder, cover change)
+  // where there is no continuous stream of events to debounce.
+  const bumpPreviewNow = useCallback(() => {
+    clearTimeout(previewTimer.current)
+    setPreviewKey((k) => k + 1)
+  }, [])
+
+  useEffect(() => () => clearTimeout(previewTimer.current), [])
 
   useEffect(() => {
     Promise.all([
@@ -46,8 +61,8 @@ export default function Editor({ onSettings }) {
   const reloadAlbums = useCallback(async () => {
     const list = await window.api?.albums.list()
     setAlbums(list ?? [])
-    bumpPreview()
-  }, [bumpPreview])
+    bumpPreviewNow()
+  }, [bumpPreviewNow])
 
   const reloadSite = useCallback(async () => {
     const si = await window.api?.site.get()
