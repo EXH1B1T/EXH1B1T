@@ -21,7 +21,7 @@ export default function Editor({ onSettings }) {
   const [selectedSlug, setSlug]     = useState(null)
   const [user, setUser]             = useState(null)
   const [site, setSite]             = useState(null)
-  const [previewW, setPreviewW]     = useState(460)
+  const [previewW, setPreviewW]     = useState(() => Math.round(window.innerWidth * 0.40))
   const [dragging, setDragging]     = useState(false)
   const mainRef                     = useRef(null)
   const [previewDevice, setDevice]  = useState('desktop')
