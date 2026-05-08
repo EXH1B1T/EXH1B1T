@@ -55,6 +55,8 @@
   padding: 16px 10px;
   border-right: 1px solid var(--border);
   background: var(--bg);
+  display: flex;
+  flex-direction: column;
 }
 
 .tab {
@@ -81,6 +83,30 @@
   padding-left: 8px;
   font-weight: 500;
 }
+
+/* Pushes sign-out to bottom of tab rail */
+.tabSpacer {
+  flex: 1;
+}
+
+.signOutBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--danger);
+  font-size: 12.5px;
+  text-align: left;
+  border-left: 2px solid transparent;
+  transition: background var(--t-fast);
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+.signOutBtn:hover:not(:disabled) { background: rgba(255, 77, 77, 0.08); }
+.signOutBtn:disabled { opacity: 0.5; cursor: default; }
 
 /* ── Content area ── */
 .content {

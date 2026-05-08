@@ -15,12 +15,19 @@ const TABS = [
 
 const DNS_IPS = ['185.199.108.153', '185.199.109.153', '185.199.110.153', '185.199.111.153']
 
-export default function Settings({ onBack }) {
-  const [tab, setTab]       = useState('site')
-  const [site, setSite]     = useState(null)
-  const [user, setUser]     = useState(null)
-  const [saving, setSaving] = useState(false)
-  const saveTimer           = useRef(null)
+export default function Settings({ onBack, onLogout }) {
+  const [tab, setTab]           = useState('site')
+  const [site, setSite]         = useState(null)
+  const [user, setUser]         = useState(null)
+  const [saving, setSaving]     = useState(false)
+  const [loggingOut, setOut]    = useState(false)
+  const saveTimer               = useRef(null)
+
+  const handleLogout = async () => {
+    setOut(true)
+    await onLogout?.()
+    setOut(false)
+  }
 
   useEffect(() => {
     Promise.all([
@@ -65,6 +72,13 @@ export default function Settings({ onBack }) {
               {label}
             </button>
           ))}
+
+          <div className={s.tabSpacer} />
+
+          <button className={s.signOutBtn} onClick={handleLogout} disabled={loggingOut}>
+            <Icon name="logout" size={13} color="var(--danger)" />
+            {loggingOut ? 'Signing out…' : 'Sign out'}
+          </button>
         </div>
 
         {/* Content */}

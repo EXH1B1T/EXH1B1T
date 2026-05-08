@@ -25,6 +25,7 @@ export default function Icon({ name, size = 14, color = 'currentColor', strokeWi
     case 'pencil':   return <svg {...common}><path d="M14 3l3 3-9.5 9.5L4 17l1.5-3.5L14 3z" {...p}/><path d="M12 5l3 3" {...p}/></svg>
     case 'grip':     return <svg {...common}><circle cx="7" cy="7"  r="1" fill={color}/><circle cx="13" cy="7"  r="1" fill={color}/><circle cx="7" cy="10" r="1" fill={color}/><circle cx="13" cy="10" r="1" fill={color}/><circle cx="7" cy="13" r="1" fill={color}/><circle cx="13" cy="13" r="1" fill={color}/></svg>
     case 'info':     return <svg {...common}><circle cx="10" cy="10" r="7" {...p}/><path d="M10 9v5" {...p}/><circle cx="10" cy="6.5" r="0.5" fill={color} stroke="none"/></svg>
+    case 'logout':   return <svg {...common}><path d="M7 4H4v12h3M13 7l3 3-3 3M7 10h9" {...p}/></svg>
     default: return null
   }
 }

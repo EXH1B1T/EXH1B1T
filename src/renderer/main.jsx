@@ -37,7 +37,15 @@ function App() {
   }
 
   if (screen === 'settings') {
-    return <Settings onBack={() => setScreen('editor')} />
+    return (
+      <Settings
+        onBack={() => setScreen('editor')}
+        onLogout={async () => {
+          await window.api?.auth.logout()
+          setScreen('onboarding')
+        }}
+      />
+    )
   }
 
   return <Editor onSettings={() => setScreen('settings')} />
