@@ -9,7 +9,7 @@ const LAYOUTS = [
   { key: 'list', label: 'List', desc: 'Albums displayed as full-width rows' },
 ]
 
-export default function HomeEditor({ site, albums, onSave }) {
+export default function HomeEditor({ site, albums, onSave, onAddAlbum }) {
   const [saving, setSaving]     = useState(false)
   const [items, setItems]       = useState([])
   const [dragIdx, setDragIdx]   = useState(null)
@@ -64,6 +64,52 @@ export default function HomeEditor({ site, albums, onSave }) {
   const handleDragEnd = () => { setDragIdx(null); setOverIdx(null) }
 
   if (!site) return null
+
+  // First-run: no albums yet → show onboarding guide
+  if (items.length === 0) {
+    return (
+      <div className={s.container}>
+        <div className={s.header}>
+          <div className={s.title}>Home</div>
+        </div>
+        <div className={s.firstRun}>
+          <div className={s.firstRunIcon}>
+            <Icon name="image" size={22} color="var(--text-2)" />
+          </div>
+          <div className={s.firstRunTitle}>Start your portfolio</div>
+          <p className={s.firstRunDesc}>
+            Create albums, add photos, and publish — your site goes live on GitHub Pages for free.
+          </p>
+          <div className={s.firstRunSteps}>
+            <div className={s.firstRunStep}>
+              <div className={s.firstRunStepNum}>1</div>
+              <div className={s.firstRunStepText}>
+                <strong>Create an album</strong> — click the button below or press <strong>+</strong> in the sidebar
+              </div>
+            </div>
+            <div className={s.firstRunStep}>
+              <div className={s.firstRunStepNum}>2</div>
+              <div className={s.firstRunStepText}>
+                <strong>Add photos</strong> — drag & drop images into the album editor
+              </div>
+            </div>
+            <div className={s.firstRunStep}>
+              <div className={s.firstRunStepNum}>3</div>
+              <div className={s.firstRunStepText}>
+                <strong>Publish</strong> — hit the Publish button and your site is live
+              </div>
+            </div>
+          </div>
+          <button
+            className={s.firstRunBtn}
+            onClick={() => onAddAlbum?.()}
+          >
+            <Icon name="plus" size={13} color="#0a0a0a" /> Create first album
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   const home = site.home ?? {}
 

@@ -11,10 +11,11 @@ afterEach(() => vi.useRealTimers())
 const baseSite = {
   title: 'Test Portfolio',
   home: { layout: 'grid', headline: 'Jane Doe', subhead: 'Photographer', intro: 'Welcome.' },
-  theme: { name: 'default', options: {} },
+  theme: { name: 'lumen', options: {} },
   owner: { name: 'Jane', bio: '' },
 }
 
+// Need at least one album so the normal editor (not first-run) renders
 const albums = [
   { slug: 'portraits', title: 'Portraits', order: 0, photos: [] },
   { slug: 'weddings',  title: 'Weddings',  order: 1, photos: [] },
@@ -22,30 +23,30 @@ const albums = [
 
 describe('HomeEditor', () => {
   it('renders null when site is not provided', () => {
-    const { container } = render(<HomeEditor site={null} albums={[]} onSave={() => {}} />)
+    const { container } = render(<HomeEditor site={null} albums={albums} onSave={() => {}} />)
     expect(container).toBeEmptyDOMElement()
   })
 
   it('renders layout cards (Grid and List)', () => {
-    render(<HomeEditor site={baseSite} albums={[]} onSave={() => {}} />)
+    render(<HomeEditor site={baseSite} albums={albums} onSave={() => {}} />)
     expect(screen.getByText('Grid')).toBeInTheDocument()
     expect(screen.getByText('List')).toBeInTheDocument()
   })
 
   it('renders headline input with current value', () => {
-    render(<HomeEditor site={baseSite} albums={[]} onSave={() => {}} />)
+    render(<HomeEditor site={baseSite} albums={albums} onSave={() => {}} />)
     expect(screen.getByDisplayValue('Jane Doe')).toBeInTheDocument()
   })
 
   it('renders subhead and intro inputs', () => {
-    render(<HomeEditor site={baseSite} albums={[]} onSave={() => {}} />)
+    render(<HomeEditor site={baseSite} albums={albums} onSave={() => {}} />)
     expect(screen.getByDisplayValue('Photographer')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Welcome.')).toBeInTheDocument()
   })
 
   it('calls window.api.site.save when headline changes', () => {
     vi.useFakeTimers()
-    render(<HomeEditor site={baseSite} albums={[]} onSave={() => {}} />)
+    render(<HomeEditor site={baseSite} albums={albums} onSave={() => {}} />)
     const input = screen.getByDisplayValue('Jane Doe')
     fireEvent.change(input, { target: { value: 'New Name' } })
     vi.advanceTimersByTime(700)
@@ -59,20 +60,28 @@ describe('HomeEditor', () => {
     expect(screen.getByText('Weddings')).toBeInTheDocument()
   })
 
-  it('shows "No albums yet" when no albums', () => {
+  it('shows first-run state when no albums', () => {
     render(<HomeEditor site={baseSite} albums={[]} onSave={() => {}} />)
-    expect(screen.getByText('No albums yet')).toBeInTheDocument()
+    expect(screen.getByText('Start your portfolio')).toBeInTheDocument()
+    expect(screen.getByText('Create first album')).toBeInTheDocument()
+  })
+
+  it('first-run state shows the 3-step guide', () => {
+    render(<HomeEditor site={baseSite} albums={[]} onSave={() => {}} />)
+    expect(screen.getAllByText(/Create an album/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/Add photos/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/Publish/i).length).toBeGreaterThan(0)
   })
 
   it('highlights the active layout card', () => {
     const siteWithList = { ...baseSite, home: { ...baseSite.home, layout: 'list' } }
-    render(<HomeEditor site={siteWithList} albums={[]} onSave={() => {}} />)
+    render(<HomeEditor site={siteWithList} albums={albums} onSave={() => {}} />)
     expect(screen.getByText('List')).toBeInTheDocument()
   })
 
   it('saves when layout card is clicked', () => {
     vi.useFakeTimers()
-    render(<HomeEditor site={baseSite} albums={[]} onSave={() => {}} />)
+    render(<HomeEditor site={baseSite} albums={albums} onSave={() => {}} />)
     fireEvent.click(screen.getByText('List'))
     vi.advanceTimersByTime(700)
     expect(window.api.site.save).toHaveBeenCalledWith(
@@ -82,7 +91,7 @@ describe('HomeEditor', () => {
 
   it('saves when subhead changes', () => {
     vi.useFakeTimers()
-    render(<HomeEditor site={baseSite} albums={[]} onSave={() => {}} />)
+    render(<HomeEditor site={baseSite} albums={albums} onSave={() => {}} />)
     fireEvent.change(screen.getByDisplayValue('Photographer'), { target: { value: 'Berlin' } })
     vi.advanceTimersByTime(700)
     expect(window.api.site.save).toHaveBeenCalled()
@@ -90,7 +99,7 @@ describe('HomeEditor', () => {
 
   it('saves when intro changes', () => {
     vi.useFakeTimers()
-    render(<HomeEditor site={baseSite} albums={[]} onSave={() => {}} />)
+    render(<HomeEditor site={baseSite} albums={albums} onSave={() => {}} />)
     fireEvent.change(screen.getByDisplayValue('Welcome.'), { target: { value: 'New intro' } })
     vi.advanceTimersByTime(700)
     expect(window.api.site.save).toHaveBeenCalled()
@@ -99,7 +108,7 @@ describe('HomeEditor', () => {
   it('calls onSave callback after save', async () => {
     vi.useFakeTimers()
     const onSave = vi.fn()
-    render(<HomeEditor site={baseSite} albums={[]} onSave={onSave} />)
+    render(<HomeEditor site={baseSite} albums={albums} onSave={onSave} />)
     fireEvent.change(screen.getByDisplayValue('Jane Doe'), { target: { value: 'New' } })
     vi.advanceTimersByTime(700)
     await Promise.resolve() // flush async callback after await window.api.site.save
@@ -109,7 +118,7 @@ describe('HomeEditor', () => {
   it('passes immediate=true to onSave when layout card is clicked', async () => {
     vi.useFakeTimers()
     const onSave = vi.fn()
-    render(<HomeEditor site={baseSite} albums={[]} onSave={onSave} />)
+    render(<HomeEditor site={baseSite} albums={albums} onSave={onSave} />)
     fireEvent.click(screen.getByText('List'))
     vi.advanceTimersByTime(700)
     await Promise.resolve()
@@ -119,7 +128,7 @@ describe('HomeEditor', () => {
   it('passes immediate=false to onSave when text input changes', async () => {
     vi.useFakeTimers()
     const onSave = vi.fn()
-    render(<HomeEditor site={baseSite} albums={[]} onSave={onSave} />)
+    render(<HomeEditor site={baseSite} albums={albums} onSave={onSave} />)
     fireEvent.change(screen.getByDisplayValue('Jane Doe'), { target: { value: 'New' } })
     vi.advanceTimersByTime(700)
     await Promise.resolve()

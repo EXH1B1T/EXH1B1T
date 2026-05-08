@@ -198,7 +198,7 @@ export default function Editor({ onSettings }) {
           {/* Editor panel */}
           <div className={s.editorPanel}>
             {selectedSlug === '__home' && (
-              <HomeEditor site={site} albums={albums} onSave={handleSaveSite} />
+              <HomeEditor site={site} albums={albums} onSave={handleSaveSite} onAddAlbum={handleAddAlbum} />
             )}
             {selectedSlug === '__about' && (
               <AboutEditor site={site} onSave={handleSaveSite} />

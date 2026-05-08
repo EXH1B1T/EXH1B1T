@@ -39,7 +39,7 @@ describe('PublishButton', () => {
     window.api.publish.start = vi.fn().mockResolvedValue({ ok: true, url: 'https://testuser.github.io' })
     render(<PublishButton siteUrl="https://testuser.github.io" />)
     await userEvent.click(screen.getByText('Publish'))
-    await waitFor(() => expect(screen.getByText('Published')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText('Published!')).toBeInTheDocument())
     expect(screen.getByText('https://testuser.github.io')).toBeInTheDocument()
     expect(screen.getByText('Open site')).toBeInTheDocument()
   })
@@ -65,7 +65,7 @@ describe('PublishButton', () => {
     await userEvent.click(screen.getByText('Publish'))
     await waitFor(() => screen.getByText('Close'))
     await userEvent.click(screen.getByText('Close'))
-    expect(screen.queryByText('Published')).not.toBeInTheDocument()
+    expect(screen.queryByText('Published!')).not.toBeInTheDocument()
   })
 
   it('registers onProgress handler when publishing starts', async () => {

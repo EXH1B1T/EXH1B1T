@@ -35,16 +35,34 @@
   "build": {
     "appId": "com.exh1b1t.app",
     "productName": "EXH1B1T",
+    "icon": "build/icon",
+    "files": [
+      "dist/**/*",
+      "src/main/**/*",
+      "src/shared/**/*",
+      "resources/**/*",
+      "package.json"
+    ],
     "mac": {
       "category": "public.app-category.photography",
-      "target": "dmg"
+      "icon": "build/icon.icns",
+      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }]
     },
     "win": {
+      "icon": "build/icon.ico",
       "target": "nsis"
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "target": "AppImage",
+      "category": "Graphics"
+    },
+    "scripts": {
+      "postinstall": "node scripts/generate-icons.js"
     },
     "publish": {
       "provider": "github",
-      "owner": "YOUR_GITHUB_USERNAME",
+      "owner": "EXH1B1T",
       "repo": "exh1b1t"
     }
   }

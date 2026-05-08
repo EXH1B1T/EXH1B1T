@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import s from './PublishButton.module.css'
 import Icon from './Icon'
 import Spinner from './Spinner'
@@ -18,6 +18,8 @@ export default function PublishButton({ siteUrl }) {
   const [progress, setProgress] = useState(0)
   const [currentStep, setCurrentStep] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
+  const [propagateSec, setPropagateSec] = useState(0)
+  const propagateTimer = useRef(null)
 
   const startPublish = async () => {
     setModalState('publishing')
@@ -34,6 +36,10 @@ export default function PublishButton({ siteUrl }) {
 
     if (result?.ok) {
       setModalState('success')
+      setPropagateSec(0)
+      propagateTimer.current = setInterval(() => {
+        setPropagateSec((n) => n + 1)
+      }, 1000)
     } else {
       setErrorMsg(result?.error ?? 'Something went wrong.')
       setModalState('error')
@@ -44,7 +50,11 @@ export default function PublishButton({ siteUrl }) {
     setModalState(null)
     setProgress(0)
     setCurrentStep('')
+    clearInterval(propagateTimer.current)
+    setPropagateSec(0)
   }
+
+  useEffect(() => () => clearInterval(propagateTimer.current), [])
 
   const stepIdx = STEPS.findIndex((s) => s.key === currentStep)
 
@@ -86,26 +96,67 @@ export default function PublishButton({ siteUrl }) {
               </>
             )}
 
-            {modalState === 'success' && (
-              <div className={s.success}>
-                <div>
-                  <Icon name="check" size={20} color="var(--accent)" />
+            {modalState === 'success' && (() => {
+              const PROPAGATE_SECS = 120  // assume live after ~2 min
+              const pct     = Math.min(100, Math.round((propagateSec / PROPAGATE_SECS) * 100))
+              const isLive  = pct >= 100
+              const minLeft = Math.max(0, Math.ceil((PROPAGATE_SECS - propagateSec) / 60))
+              return (
+                <div className={s.success}>
+                  <div style={{
+                    width: 44, height: 44, borderRadius: '50%',
+                    background: 'color-mix(in srgb, var(--accent) 12%, transparent)',
+                    border: '1px solid color-mix(in srgb, var(--accent) 40%, transparent)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14,
+                  }}>
+                    <Icon name="check" size={20} color="var(--accent)" />
+                  </div>
+                  <div style={{ fontSize: 17, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
+                    Published!
+                  </div>
+
+                  {/* Propagation status */}
+                  <div style={{ width: '100%', marginBottom: 14 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-3)', marginBottom: 6 }}>
+                      <span>GitHub Pages propagating…</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', color: isLive ? 'var(--success)' : 'var(--text-3)' }}>
+                        {isLive ? 'should be live' : `~${minLeft} min left`}
+                      </span>
+                    </div>
+                    <div style={{ height: 3, background: 'var(--bg-3)', borderRadius: 99, overflow: 'hidden' }}>
+                      <div style={{
+                        height: '100%', borderRadius: 99,
+                        width: `${pct}%`,
+                        background: isLive ? 'var(--success)' : 'var(--accent)',
+                        transition: 'width 1s linear',
+                      }} />
+                    </div>
+                  </div>
+
+                  <div className={s.liveUrl}>
+                    <Icon name="cloud" size={14} color="var(--text-2)" />
+                    <span style={{ flex: 1 }}>{siteUrl}</span>
+                    <span style={{
+                      fontSize: 10.5, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', textTransform: 'uppercase',
+                      color: isLive ? 'var(--success)' : 'var(--text-3)',
+                    }}>
+                      {isLive ? 'LIVE' : 'DEPLOYING'}
+                    </span>
+                  </div>
+
+                  <div className={s.message} style={{ marginTop: 10 }}>
+                    If the site looks the same after a few minutes, do a hard refresh in your browser (⌘⇧R).
+                  </div>
+
+                  <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+                    <Btn variant="primary" full onClick={() => window.open(siteUrl)}>
+                      <Icon name="external" size={13} color="#0a0a0a" /> Open site
+                    </Btn>
+                    <Btn variant="secondary" onClick={close}>Close</Btn>
+                  </div>
                 </div>
-                <div style={{ fontSize: 17, fontWeight: 600, color: 'var(--text)', marginBottom: 3 }}>Published</div>
-                <div className={s.message}>Your site may take 1–5 minutes to update on GitHub Pages.</div>
-                <div className={s.liveUrl}>
-                  <Icon name="cloud" size={14} color="var(--text-2)" />
-                  <span style={{ flex: 1 }}>{siteUrl}</span>
-                  <span style={{ fontSize: 11, color: 'var(--success)', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>LIVE</span>
-                </div>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <Btn variant="primary" full onClick={() => window.open(siteUrl)}>
-                    <Icon name="external" size={13} color="#0a0a0a" /> Open site
-                  </Btn>
-                  <Btn variant="secondary" onClick={close}>Close</Btn>
-                </div>
-              </div>
-            )}
+              )
+            })()}
 
             {modalState === 'error' && (
               <>
