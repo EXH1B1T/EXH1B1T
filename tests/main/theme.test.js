@@ -102,9 +102,9 @@ describe('installTheme', () => {
 // ── getCurrent ────────────────────────────────────────────────────────────────
 
 describe('getCurrent', () => {
-  it('returns "default" when no site.json exists', async () => {
+  it('returns "lumen" when no site.json exists', async () => {
     const name = await getCurrent()
-    expect(name).toBe('default')
+    expect(name).toBe('lumen')
   })
 
   it('returns the theme name stored in site.json', async () => {

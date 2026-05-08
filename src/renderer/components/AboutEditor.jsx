@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import s from './AboutEditor.module.css'
 import Field from './Field'
 import Icon from './Icon'
+import { showToast } from './Toast'
 
 export default function AboutEditor({ site, onSave }) {
   const [saving, setSaving]         = useState(false)
@@ -19,9 +20,14 @@ export default function AboutEditor({ site, onSave }) {
     clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
       const next = { ...site, ...update }
-      await window.api?.site.save(next)
-      onSave?.(next)
-      setSaving(false)
+      try {
+        await window.api?.site.save(next)
+        onSave?.(next)
+      } catch {
+        showToast('Failed to save changes. Please try again.', 'error')
+      } finally {
+        setSaving(false)
+      }
     }, 600)
   }, [site, onSave])
 
@@ -48,9 +54,14 @@ export default function AboutEditor({ site, onSave }) {
     clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
       const next = { ...site, about: { ...site?.about, exhibitions: list } }
-      await window.api?.site.save(next)
-      onSave?.(next)
-      setSaving(false)
+      try {
+        await window.api?.site.save(next)
+        onSave?.(next)
+      } catch {
+        showToast('Failed to save changes. Please try again.', 'error')
+      } finally {
+        setSaving(false)
+      }
     }, 600)
   }, [site, onSave])
 

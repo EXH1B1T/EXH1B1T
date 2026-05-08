@@ -12,7 +12,17 @@ Handlebars.registerHelper('formatDate', (dateStr) => {
   return isNaN(d) ? dateStr : d.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
 })
 
-Handlebars.registerHelper('albumUrl', (slug) => `/albums/${slug}`)
+Handlebars.registerHelper('albumUrl', (slugOrAlbum) => {
+  const slug = slugOrAlbum && typeof slugOrAlbum === 'object' ? slugOrAlbum.slug : slugOrAlbum
+  return `/albums/${slug}`
+})
+
+// Resolve a portrait/avatar path: return as-is if already a URL, else wrap for local preview.
+Handlebars.registerHelper('portraitUrl', (src) => {
+  if (!src) return ''
+  if (src.startsWith('http')) return src
+  return toLocalUrl(src)
+})
 
 // Convert an absolute local path to a local:// URL usable in the preview webview.
 function toLocalUrl(absPath) {
@@ -24,14 +34,20 @@ function toLocalUrl(absPath) {
 }
 
 Handlebars.registerHelper('imageUrl', (photo) => photo?.url ?? toLocalUrl(photo?.localPath))
-Handlebars.registerHelper('thumbUrl',  (photo) =>
-  photo?.thumbUrl ?? toLocalUrl(photo?.thumbLocalPath) ?? photo?.url ?? toLocalUrl(photo?.localPath))
+Handlebars.registerHelper('thumbUrl', (photo) => {
+  if (!photo) return ''
+  if (photo.thumbUrl)       return photo.thumbUrl
+  if (photo.thumbLocalPath) return toLocalUrl(photo.thumbLocalPath)
+  if (photo.url)            return photo.url
+  return toLocalUrl(photo.localPath)
+})
 Handlebars.registerHelper('coverUrl',  (album) => {
   const cover = album?.photos?.find(p => p.filename === album.coverPhoto) ?? album?.photos?.[0]
   return cover?.url ?? toLocalUrl(cover?.localPath)
 })
 
-Handlebars.registerHelper('eq', (a, b) => a === b)
+Handlebars.registerHelper('eq',  (a, b) => a === b)
+Handlebars.registerHelper('add', (a, b) => (Number(a) || 0) + (Number(b) || 0))
 
 Handlebars.registerHelper('aspectRatio', (photo) => {
   if (!photo?.width || !photo?.height) return '1 / 1'
@@ -97,7 +113,7 @@ async function buildSite(options = {}) {
       .map(f => readJson(path.join(PATHS.albums, f)))
   )).filter(Boolean).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 
-  const themeName = siteRaw.theme?.name ?? 'default'
+  const themeName = siteRaw.theme?.name ?? 'lumen'
   const themeHtml = await loadTheme(themeName)
   const templates = extractTemplates(themeHtml)
   const globalStyle  = extractStyles(themeHtml)

@@ -1,5 +1,6 @@
 const path = require('path')
 const fs = require('fs').promises
+const crypto = require('crypto')
 const sharp = require('sharp')
 const { PATHS, readJson, writeJson } = require('../storage')
 const { DEFAULTS } = require('../../shared/types')
@@ -40,14 +41,20 @@ async function addPhotos(albumSlug, filePaths) {
       .toFile(thumbDest)
 
     const normalizedFilename = filename.replace(/\.[^.]+$/, '.jpg')
+    const processedPath = dest.replace(/\.[^.]+$/, '.jpg')
+    const hashBuf = await fs.readFile(processedPath).catch(() => null)
+    const contentHash = hashBuf
+      ? crypto.createHash('sha256').update(hashBuf).digest('hex').slice(0, 16)
+      : null
     added.push({
       ...DEFAULTS.photo,
       filename: normalizedFilename,
-      localPath: dest.replace(/\.[^.]+$/, '.jpg'),
+      localPath: processedPath,
       thumbLocalPath: thumbDest,
       width: meta.width,
       height: meta.height,
       order: album.photos.length + added.length,
+      contentHash,
     })
   }
 

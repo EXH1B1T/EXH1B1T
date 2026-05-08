@@ -91,4 +91,74 @@ describe('AboutEditor', () => {
     await userEvent.upload(fileInput, file)
     expect(window.api.utils.getPathForFile).toHaveBeenCalledWith(file)
   })
+
+  it('calls window.api.site.save when bio changes', () => {
+    vi.useFakeTimers()
+    render(<AboutEditor site={baseSite} onSave={() => {}} />)
+    const bio = screen.getByDisplayValue('Portrait photographer.')
+    fireEvent.change(bio, { target: { value: 'New bio' } })
+    vi.advanceTimersByTime(700)
+    expect(window.api.site.save).toHaveBeenCalledWith(
+      expect.objectContaining({ owner: expect.objectContaining({ bio: 'New bio' }) })
+    )
+  })
+
+  it('calls window.api.site.save when email changes', () => {
+    vi.useFakeTimers()
+    render(<AboutEditor site={baseSite} onSave={() => {}} />)
+    const email = screen.getByDisplayValue('jane@example.com')
+    fireEvent.change(email, { target: { value: 'new@example.com' } })
+    vi.advanceTimersByTime(700)
+    expect(window.api.site.save).toHaveBeenCalledWith(
+      expect.objectContaining({ social: expect.objectContaining({ email: 'new@example.com' }) })
+    )
+  })
+
+  it('calls window.api.site.save when exhibition title changes', () => {
+    vi.useFakeTimers()
+    const site = {
+      ...baseSite,
+      about: { portrait: null, exhibitions: [{ title: 'Show A', venue: 'Gallery', year: '2023' }] },
+    }
+    render(<AboutEditor site={site} onSave={() => {}} />)
+    fireEvent.change(screen.getByDisplayValue('Show A'), { target: { value: 'Show B' } })
+    vi.advanceTimersByTime(700)
+    expect(window.api.site.save).toHaveBeenCalledWith(
+      expect.objectContaining({
+        about: expect.objectContaining({
+          exhibitions: expect.arrayContaining([expect.objectContaining({ title: 'Show B' })]),
+        }),
+      })
+    )
+  })
+
+  it('calls window.api.site.save when exhibition venue changes', () => {
+    vi.useFakeTimers()
+    const site = {
+      ...baseSite,
+      about: { portrait: null, exhibitions: [{ title: 'Show', venue: 'Old Venue', year: '2023' }] },
+    }
+    render(<AboutEditor site={site} onSave={() => {}} />)
+    fireEvent.change(screen.getByDisplayValue('Old Venue'), { target: { value: 'New Venue' } })
+    vi.advanceTimersByTime(700)
+    expect(window.api.site.save).toHaveBeenCalled()
+  })
+
+  it('calls onSave callback after save', async () => {
+    vi.useFakeTimers()
+    const onSave = vi.fn()
+    render(<AboutEditor site={baseSite} onSave={onSave} />)
+    fireEvent.change(screen.getByDisplayValue('Jane Doe'), { target: { value: 'Jane Smith' } })
+    vi.advanceTimersByTime(700)
+    await Promise.resolve() // flush async callback after await window.api.site.save
+    expect(onSave).toHaveBeenCalled()
+  })
+
+  it('portrait image uses local:// when portrait is a local path (https: already tested)', () => {
+    const site = { ...baseSite, about: { portrait: '/Users/test/photo.jpg', exhibitions: [] } }
+    render(<AboutEditor site={site} onSave={() => {}} />)
+    const img = screen.getByAltText('Portrait')
+    expect(img.src).toContain('local://')
+    expect(img.src).not.toMatch(/^\/Users\//)
+  })
 })

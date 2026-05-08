@@ -61,6 +61,9 @@ const TEST_THEME_HTML = `<!--
 <body>
   <h1 class="owner-name">{{site.owner.name}}</h1>
   <p class="owner-bio">{{site.owner.bio}}</p>
+  {{#if site.about.portrait}}
+  <img class="portrait-img" src="{{portraitUrl site.about.portrait}}" alt="portrait"/>
+  {{/if}}
 </body>
 </html>
 </template>
@@ -200,6 +203,29 @@ describe('buildSite', () => {
     expect(html).toContain('Jane Doe')
   })
 
+  it('renders portrait as local:// URL when portrait is a local path', async () => {
+    const siteWithPortrait = { ...sampleSite, about: { portrait: '/Users/test/portrait.jpg', exhibitions: [] } }
+    await fs.writeFile(PATHS.site, JSON.stringify(siteWithPortrait))
+    await buildSite({ mode: 'preview', outputDir: OUTPUT_DIR })
+    const html = await fs.readFile(path.join(OUTPUT_DIR, 'about.html'), 'utf-8')
+    expect(html).toContain('local://')
+    expect(html).not.toContain('src="/Users/test/portrait.jpg"')
+  })
+
+  it('renders portrait as-is when portrait is already a remote URL', async () => {
+    const siteWithPortrait = { ...sampleSite, about: { portrait: 'https://cdn/portrait.jpg', exhibitions: [] } }
+    await fs.writeFile(PATHS.site, JSON.stringify(siteWithPortrait))
+    await buildSite({ mode: 'preview', outputDir: OUTPUT_DIR })
+    const html = await fs.readFile(path.join(OUTPUT_DIR, 'about.html'), 'utf-8')
+    expect(html).toContain('src="https://cdn/portrait.jpg"')
+  })
+
+  it('omits portrait img when portrait is null', async () => {
+    await buildSite({ mode: 'preview', outputDir: OUTPUT_DIR })
+    const html = await fs.readFile(path.join(OUTPUT_DIR, 'about.html'), 'utf-8')
+    expect(html).not.toContain('portrait-img')
+  })
+
   it('injects global style from theme', async () => {
     await buildSite({ mode: 'preview', outputDir: OUTPUT_DIR })
     const html = await fs.readFile(path.join(OUTPUT_DIR, 'index.html'), 'utf-8')
@@ -220,6 +246,16 @@ describe('buildSite', () => {
     const result = await buildSite({ mode: 'preview', outputDir: OUTPUT_DIR })
     expect(result.ok).toBe(true)
     await expect(fs.access(path.join(OUTPUT_DIR, 'index.html'))).resolves.toBeUndefined()
+  })
+
+  it('copies _data/ directory in publish mode', async () => {
+    await buildSite({ mode: 'publish', outputDir: OUTPUT_DIR })
+    await expect(fs.access(path.join(OUTPUT_DIR, '_data'))).resolves.toBeUndefined()
+  })
+
+  it('does NOT copy _data/ directory in preview mode', async () => {
+    await buildSite({ mode: 'preview', outputDir: OUTPUT_DIR })
+    await expect(fs.access(path.join(OUTPUT_DIR, '_data'))).rejects.toThrow()
   })
 })
 
@@ -280,6 +316,29 @@ describe('Handlebars helpers', () => {
     })
   })
 
+  describe('portraitUrl', () => {
+    it('returns empty string for null/undefined', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['portraitUrl']
+      expect(fn(null)).toBe('')
+      expect(fn(undefined)).toBe('')
+    })
+
+    it('returns the URL as-is when already a remote URL', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['portraitUrl']
+      expect(fn('https://github.com/releases/portrait.jpg')).toBe('https://github.com/releases/portrait.jpg')
+    })
+
+    it('converts local path to local:// URL for preview', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['portraitUrl']
+      const result = fn('/Users/test/portrait.jpg')
+      expect(result).toContain('local://')
+      expect(result).toContain('/Users/test/portrait.jpg')
+    })
+  })
+
   describe('imageUrl / thumbUrl', () => {
     it('imageUrl prefers photo.url over localPath', async () => {
       const Handlebars = (await import('handlebars')).default
@@ -295,11 +354,146 @@ describe('Handlebars helpers', () => {
       expect(fn(photo)).toContain('local://')
     })
 
+    it('imageUrl returns empty string for null photo', async () => {
+      const Handlebars = (await import('handlebars')).default
+      expect(Handlebars.helpers['imageUrl'](null)).toBe('')
+    })
+
     it('thumbUrl prefers photo.thumbUrl', async () => {
       const Handlebars = (await import('handlebars')).default
       const fn = Handlebars.helpers['thumbUrl']
       const photo = { thumbUrl: 'https://cdn/thumb.jpg', url: 'https://cdn/full.jpg' }
       expect(fn(photo)).toBe('https://cdn/thumb.jpg')
+    })
+
+    it('thumbUrl falls back to thumbLocalPath as local:// when no thumbUrl', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['thumbUrl']
+      const photo = { thumbUrl: null, thumbLocalPath: '/Users/test/thumb.jpg', url: null }
+      const result = fn(photo)
+      expect(result).toContain('local://')
+      expect(result).toContain('thumb.jpg')
+    })
+
+    it('thumbUrl falls back to photo.url when no thumbUrl or thumbLocalPath', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['thumbUrl']
+      const photo = { thumbUrl: null, thumbLocalPath: null, url: 'https://cdn/full.jpg', localPath: null }
+      expect(fn(photo)).toBe('https://cdn/full.jpg')
+    })
+
+    it('thumbUrl falls back to localPath as local:// as last resort', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['thumbUrl']
+      const photo = { thumbUrl: null, thumbLocalPath: null, url: null, localPath: '/Users/test/img.jpg' }
+      const result = fn(photo)
+      expect(result).toContain('local://')
+      expect(result).toContain('img.jpg')
+    })
+
+    it('thumbUrl returns empty string for null photo', async () => {
+      const Handlebars = (await import('handlebars')).default
+      expect(Handlebars.helpers['thumbUrl'](null)).toBe('')
+    })
+  })
+
+  describe('coverUrl', () => {
+    it('returns photo.url for the matching cover photo', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['coverUrl']
+      const album = {
+        coverPhoto: 'cover.jpg',
+        photos: [{ filename: 'cover.jpg', url: 'https://cdn/cover.jpg', localPath: null }],
+      }
+      expect(fn(album)).toBe('https://cdn/cover.jpg')
+    })
+
+    it('returns local:// URL for cover when only localPath', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['coverUrl']
+      const album = {
+        coverPhoto: 'cover.jpg',
+        photos: [{ filename: 'cover.jpg', url: null, localPath: '/Users/test/cover.jpg' }],
+      }
+      expect(fn(album)).toContain('local://')
+    })
+
+    it('falls back to first photo when coverPhoto does not match any photo', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['coverUrl']
+      const album = {
+        coverPhoto: 'missing.jpg',
+        photos: [{ filename: 'first.jpg', url: 'https://cdn/first.jpg' }],
+      }
+      expect(fn(album)).toBe('https://cdn/first.jpg')
+    })
+
+    it('falls back to first photo when coverPhoto is null', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['coverUrl']
+      const album = {
+        coverPhoto: null,
+        photos: [{ filename: 'a.jpg', url: 'https://cdn/a.jpg' }],
+      }
+      expect(fn(album)).toBe('https://cdn/a.jpg')
+    })
+
+    it('returns empty string for album with no photos', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['coverUrl']
+      expect(fn({ coverPhoto: null, photos: [] })).toBe('')
+      expect(fn(null)).toBe('')
+    })
+  })
+
+  describe('eq', () => {
+    it('returns true when values are strictly equal', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['eq']
+      expect(fn('sidebar', 'sidebar')).toBe(true)
+      expect(fn(1, 1)).toBe(true)
+      expect(fn(false, false)).toBe(true)
+    })
+
+    it('returns false when values differ', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['eq']
+      expect(fn('sidebar', 'hamburger')).toBe(false)
+      expect(fn(1, '1')).toBe(false)
+    })
+  })
+
+  describe('ifLang', () => {
+    it('renders fn block when site.lang matches', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['ifLang']
+      const options = { fn: () => 'MATCH', inverse: () => 'NO' }
+      expect(fn.call({ site: { lang: 'th' } }, 'th', options)).toBe('MATCH')
+    })
+
+    it('renders inverse block when site.lang does not match', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['ifLang']
+      const options = { fn: () => 'MATCH', inverse: () => 'NO' }
+      expect(fn.call({ site: { lang: 'en' } }, 'th', options)).toBe('NO')
+    })
+  })
+
+  describe('ifOption', () => {
+    it('renders fn block when theme option matches', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['ifOption']
+      const options = { fn: () => 'MATCH', inverse: () => 'NO' }
+      const ctx = { site: { theme: { options: { colorScheme: 'dark' } } } }
+      expect(fn.call(ctx, 'colorScheme', 'dark', options)).toBe('MATCH')
+    })
+
+    it('renders inverse when theme option does not match', async () => {
+      const Handlebars = (await import('handlebars')).default
+      const fn = Handlebars.helpers['ifOption']
+      const options = { fn: () => 'MATCH', inverse: () => 'NO' }
+      const ctx = { site: { theme: { options: { colorScheme: 'dark' } } } }
+      expect(fn.call(ctx, 'colorScheme', 'light', options)).toBe('NO')
     })
   })
 })

@@ -92,16 +92,46 @@ function Section({ title, desc, children }) {
   )
 }
 
+function Where({ labels }) {
+  return (
+    <span style={{ display: 'inline-flex', flexWrap: 'wrap', alignItems: 'center', gap: 4 }}>
+      <span style={{ fontSize: 11, color: 'var(--text-3)' }}>Shown on site:</span>
+      {labels.map((l) => (
+        <span key={l} style={{
+          fontSize: 10.5, fontWeight: 500,
+          padding: '1px 7px', borderRadius: 99,
+          background: 'var(--bg-3)', color: 'var(--text-2)',
+          border: '1px solid var(--border-2)',
+        }}>{l}</span>
+      ))}
+    </span>
+  )
+}
+
+function SeoOnly() {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+      <span style={{
+        fontSize: 10.5, fontWeight: 500,
+        padding: '1px 7px', borderRadius: 99,
+        background: 'rgba(212,245,65,0.08)', color: 'var(--text-2)',
+        border: '1px solid rgba(212,245,65,0.18)',
+      }}>SEO only</span>
+      <span style={{ fontSize: 11, color: 'var(--text-3)' }}>— not visible on your site</span>
+    </span>
+  )
+}
+
 function SiteTab({ site, patch }) {
   if (!site) return null
   return (
     <>
       <div style={{ fontSize: 22, fontWeight: 600, color: 'var(--text)', marginBottom: 28, letterSpacing: -0.3 }}>Site Info</div>
-      <Section title="Website" desc="Basic info shown in the browser tab and search results">
-        <Field label="Title">
+      <Section title="SEO & Browser Tab" desc="Shown in Google search results and the browser tab — not visible on your site">
+        <Field label="Title" hint={<SeoOnly />}>
           <input defaultValue={site.title ?? ''} onChange={(e) => patch({ title: e.target.value })} />
         </Field>
-        <Field label="Description" hint="Appears in meta tags and social share previews">
+        <Field label="Description" hint={<SeoOnly />}>
           <textarea rows={2} defaultValue={site.description ?? ''} onChange={(e) => patch({ description: e.target.value })} />
         </Field>
         <Field label="Language">
@@ -113,23 +143,23 @@ function SiteTab({ site, patch }) {
         </Field>
       </Section>
 
-      <Section title="Owner" desc="Personal info shown on the About page">
-        <Field label="Name">
+      <Section title="Your Profile" desc="Your name and bio — shown on your site">
+        <Field label="Name" hint={<Where labels={['Nav bar', 'Home', 'About']} />}>
           <input defaultValue={site.owner?.name ?? ''} onChange={(e) => patch({ owner: { ...site.owner, name: e.target.value } })} />
         </Field>
-        <Field label="Bio">
+        <Field label="Bio" hint={<Where labels={['Home', 'About']} />}>
           <textarea rows={3} defaultValue={site.owner?.bio ?? ''} onChange={(e) => patch({ owner: { ...site.owner, bio: e.target.value } })} />
         </Field>
       </Section>
 
-      <Section title="Social" desc="Shown as links on your site">
-        <Field label="Instagram">
+      <Section title="Social Links" desc="Links to your social profiles — shown on your site">
+        <Field label="Instagram" hint={<Where labels={['Footer', 'About']} />}>
           <input defaultValue={site.social?.instagram ?? ''} placeholder="@username" onChange={(e) => patch({ social: { ...site.social, instagram: e.target.value } })} />
         </Field>
-        <Field label="Facebook">
+        <Field label="Facebook" hint={<Where labels={['Footer', 'About']} />}>
           <input defaultValue={site.social?.facebook ?? ''} placeholder="username" onChange={(e) => patch({ social: { ...site.social, facebook: e.target.value } })} />
         </Field>
-        <Field label="Email">
+        <Field label="Email" hint={<Where labels={['Footer', 'About']} />}>
           <input defaultValue={site.social?.email ?? ''} placeholder="hello@example.com" onChange={(e) => patch({ social: { ...site.social, email: e.target.value } })} />
         </Field>
       </Section>

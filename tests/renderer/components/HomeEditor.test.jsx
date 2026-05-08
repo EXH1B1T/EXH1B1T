@@ -67,8 +67,75 @@ describe('HomeEditor', () => {
   it('highlights the active layout card', () => {
     const siteWithList = { ...baseSite, home: { ...baseSite.home, layout: 'list' } }
     render(<HomeEditor site={siteWithList} albums={[]} onSave={() => {}} />)
-    // List card should be visually selected (CSS module class applied)
-    // We verify by checking both cards exist and the component renders without error
     expect(screen.getByText('List')).toBeInTheDocument()
+  })
+
+  it('saves when layout card is clicked', () => {
+    vi.useFakeTimers()
+    render(<HomeEditor site={baseSite} albums={[]} onSave={() => {}} />)
+    fireEvent.click(screen.getByText('List'))
+    vi.advanceTimersByTime(700)
+    expect(window.api.site.save).toHaveBeenCalledWith(
+      expect.objectContaining({ home: expect.objectContaining({ layout: 'list' }) })
+    )
+  })
+
+  it('saves when subhead changes', () => {
+    vi.useFakeTimers()
+    render(<HomeEditor site={baseSite} albums={[]} onSave={() => {}} />)
+    fireEvent.change(screen.getByDisplayValue('Photographer'), { target: { value: 'Berlin' } })
+    vi.advanceTimersByTime(700)
+    expect(window.api.site.save).toHaveBeenCalled()
+  })
+
+  it('saves when intro changes', () => {
+    vi.useFakeTimers()
+    render(<HomeEditor site={baseSite} albums={[]} onSave={() => {}} />)
+    fireEvent.change(screen.getByDisplayValue('Welcome.'), { target: { value: 'New intro' } })
+    vi.advanceTimersByTime(700)
+    expect(window.api.site.save).toHaveBeenCalled()
+  })
+
+  it('calls onSave callback after save', async () => {
+    vi.useFakeTimers()
+    const onSave = vi.fn()
+    render(<HomeEditor site={baseSite} albums={[]} onSave={onSave} />)
+    fireEvent.change(screen.getByDisplayValue('Jane Doe'), { target: { value: 'New' } })
+    vi.advanceTimersByTime(700)
+    await Promise.resolve() // flush async callback after await window.api.site.save
+    expect(onSave).toHaveBeenCalled()
+  })
+
+  it('passes immediate=true to onSave when layout card is clicked', async () => {
+    vi.useFakeTimers()
+    const onSave = vi.fn()
+    render(<HomeEditor site={baseSite} albums={[]} onSave={onSave} />)
+    fireEvent.click(screen.getByText('List'))
+    vi.advanceTimersByTime(700)
+    await Promise.resolve()
+    expect(onSave).toHaveBeenCalledWith(expect.anything(), true)
+  })
+
+  it('passes immediate=false to onSave when text input changes', async () => {
+    vi.useFakeTimers()
+    const onSave = vi.fn()
+    render(<HomeEditor site={baseSite} albums={[]} onSave={onSave} />)
+    fireEvent.change(screen.getByDisplayValue('Jane Doe'), { target: { value: 'New' } })
+    vi.advanceTimersByTime(700)
+    await Promise.resolve()
+    expect(onSave).toHaveBeenCalledWith(expect.anything(), false)
+  })
+
+  it('displays albums sorted by order', () => {
+    const unsorted = [
+      { slug: 'z', title: 'Zzz', order: 2, photos: [] },
+      { slug: 'a', title: 'Aaa', order: 0, photos: [] },
+      { slug: 'm', title: 'Mmm', order: 1, photos: [] },
+    ]
+    render(<HomeEditor site={baseSite} albums={unsorted} onSave={() => {}} />)
+    const items = screen.getAllByText(/^(Aaa|Mmm|Zzz)$/)
+    expect(items[0].textContent).toBe('Aaa')
+    expect(items[1].textContent).toBe('Mmm')
+    expect(items[2].textContent).toBe('Zzz')
   })
 })

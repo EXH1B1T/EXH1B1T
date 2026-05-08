@@ -10,6 +10,7 @@ import NavEditor from '../components/NavEditor'
 import PreviewPane from '../components/PreviewPane'
 import PublishButton from '../components/PublishButton'
 import UpdateBanner from '../components/UpdateBanner'
+import { showToast } from '../components/Toast'
 
 const PAGES = [
   { slug: '__home', title: 'Home' },
@@ -52,14 +53,19 @@ export default function Editor({ onSettings }) {
     ]).then(([al, u, si]) => {
       const list = al ?? []
       setAlbums(list)
-      setSlug(list[0]?.slug ?? null)
+      setSlug('__home')
       setUser(u)
       setSite(si)
+    }).catch(() => {
+      showToast('Failed to load your data. Please restart the app.', 'error')
     })
   }, [])
 
   const reloadAlbums = useCallback(async () => {
-    const list = await window.api?.albums.list()
+    const list = await window.api?.albums.list().catch(() => {
+      showToast('Could not reload albums.', 'error')
+      return null
+    })
     setAlbums(list ?? [])
     bumpPreviewNow()
   }, [bumpPreviewNow])
@@ -81,6 +87,15 @@ export default function Editor({ onSettings }) {
     await window.api?.albums.reorder(slugs)
     await reloadAlbums()
   }
+
+  const handleDeleteAlbum = useCallback(async () => {
+    const list = await window.api?.albums.list().catch(() => []) ?? []
+    setAlbums(list)
+    // Select the first remaining album, or fall back to home page
+    const next = list.find((a) => a.slug !== selectedSlug)
+    setSlug(next?.slug ?? '__home')
+    bumpPreviewNow()
+  }, [selectedSlug, bumpPreviewNow])
 
   const handleAddAlbum = async () => {
     const result = await window.api?.albums.create({
@@ -192,7 +207,7 @@ export default function Editor({ onSettings }) {
               <NavEditor site={site} albums={albums} onSave={handleSaveSite} />
             )}
             {selectedSlug !== '__home' && selectedSlug !== '__about' && selectedSlug !== '__nav' && (
-              <AlbumEditor album={selectedAlbum} onSaved={reloadAlbums} />
+              <AlbumEditor album={selectedAlbum} onSaved={reloadAlbums} onDelete={handleDeleteAlbum} />
             )}
           </div>
 

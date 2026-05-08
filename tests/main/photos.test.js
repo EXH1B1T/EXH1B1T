@@ -194,6 +194,86 @@ describe('reorderPhotos', () => {
   })
 })
 
+// ── updatePhoto (error paths) ─────────────────────────────────────────────────
+
+describe('updatePhoto (error paths)', () => {
+  it('returns { ok: false } for unknown album', async () => {
+    const result = await updatePhoto('ghost-album', 'img.jpg', { caption: 'New' })
+    expect(result.ok).toBe(false)
+  })
+})
+
+// ── reorderPhotos (error paths) ────────────────────────────────────────────────
+
+describe('reorderPhotos (error paths)', () => {
+  it('returns { ok: false } for unknown album', async () => {
+    const result = await reorderPhotos('ghost-album', ['a.jpg', 'b.jpg'])
+    expect(result.ok).toBe(false)
+  })
+})
+
+// ── addPhotos (multiple files) ────────────────────────────────────────────────
+
+describe('addPhotos (multiple files)', () => {
+  it('adds all files in a single call', async () => {
+    const album = await freshAlbum('Multi Upload')
+    const dir = path.join(TEST_DIR, 'multi-photos')
+    await fs.mkdir(dir, { recursive: true })
+    const files = ['one.jpg', 'two.jpg', 'three.jpg']
+    for (const f of files) await fs.writeFile(path.join(dir, f), 'data')
+
+    const result = await addPhotos(album.slug, files.map(f => path.join(dir, f)))
+    expect(result.ok).toBe(true)
+    expect(result.added).toHaveLength(3)
+    const saved = await readJson(path.join(PATHS.albums, `${album.slug}.json`))
+    expect(saved.photos).toHaveLength(3)
+  })
+
+  it('assigns incrementing order to each new photo', async () => {
+    const album = await freshAlbum('Order Check')
+    const dir = path.join(TEST_DIR, 'order-photos')
+    await fs.mkdir(dir, { recursive: true })
+    await fs.writeFile(path.join(dir, 'alpha.jpg'), 'data')
+    await fs.writeFile(path.join(dir, 'beta.jpg'), 'data')
+
+    await addPhotos(album.slug, [
+      path.join(dir, 'alpha.jpg'),
+      path.join(dir, 'beta.jpg'),
+    ])
+    const saved = await readJson(path.join(PATHS.albums, `${album.slug}.json`))
+    expect(saved.photos[0].order).toBe(0)
+    expect(saved.photos[1].order).toBe(1)
+  })
+})
+
+// ── addPhotos contentHash ─────────────────────────────────────────────────────
+
+describe('addPhotos contentHash', () => {
+  it('stores contentHash in photo data after processing', async () => {
+    const album = await freshAlbum('Hash Test')
+    const dir = path.join(TEST_DIR, 'hash-photos')
+    await fs.mkdir(dir, { recursive: true })
+    const fakeSrc = path.join(dir, 'hashtest.jpg')
+    await fs.writeFile(fakeSrc, 'fake-image-data-for-hash')
+
+    // Pre-create the processed file at the destination that photos.js will read
+    // (the sharp mock resolves but doesn't write; we seed it so readFile succeeds)
+    const { PATHS: P } = await import('../../src/main/storage.js')
+    const processedDir = path.join(P.data, 'photos', album.slug)
+    await fs.mkdir(processedDir, { recursive: true })
+    await fs.writeFile(path.join(processedDir, 'hashtest.jpg'), 'processed-image-data')
+
+    const result = await addPhotos(album.slug, [fakeSrc])
+    expect(result.ok).toBe(true)
+    expect(result.added[0].contentHash).toBeTruthy()
+    expect(typeof result.added[0].contentHash).toBe('string')
+    expect(result.added[0].contentHash.length).toBeGreaterThan(0)
+
+    const saved = await albumJson(album.slug)
+    expect(saved.photos[0].contentHash).toBeTruthy()
+  })
+})
+
 // ── setCover ──────────────────────────────────────────────────────────────────
 
 describe('setCover', () => {

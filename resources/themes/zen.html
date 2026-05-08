@@ -1,0 +1,583 @@
+<!--
+  @portfolio-theme zen
+  @description Japanese minimal portfolio. Off-white ground, Playfair Display, text-only home.
+  @preview-bg      #fafaf8
+  @preview-surface #f0efe9
+  @preview-text    #1a1a18
+  @preview-muted   #e2e0d8
+  @preview-font    Playfair
+  compatibility: portfolio-spec@1.4
+-->
+
+<style data-scope="global">
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #fafaf8;
+    --bg-2:     #f0efe9;
+    --text:     #1a1a18;
+    --text-2:   #7a7870;
+    --text-3:   #b8b6ae;
+    --border:   #e2e0d8;
+    --serif:    'Playfair Display', 'Times New Roman', Georgia, serif;
+    --sans:     'DM Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --max-w:    960px;
+    --nav-h:    60px;
+    --pad:      48px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 300;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+
+  /* ── Navigation ─────────────────────────────────────────────────────────── */
+  .nav {
+    position: sticky; top: 0;
+    background: rgba(250,250,248,0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+  .nav__inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 var(--pad);
+    height: var(--nav-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav__logo {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    flex-shrink: 0;
+  }
+  .nav__links {
+    display: flex; gap: 32px;
+    list-style: none; align-items: center;
+  }
+  .nav__links a {
+    font-size: 11.5px;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    color: var(--text-2);
+    transition: color 0.2s;
+  }
+  .nav__links a:hover,
+  .nav__links a.is-active { color: var(--text); }
+
+  /* ── Page shell ─────────────────────────────────────────────────────────── */
+  .page {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 var(--pad) 120px;
+  }
+
+  /* ── Footer ─────────────────────────────────────────────────────────────── */
+  .footer {
+    border-top: 1px solid var(--border);
+    margin-top: 100px;
+  }
+  .footer__inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 28px var(--pad);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--text-3);
+    letter-spacing: 0.03em;
+  }
+  .footer__social { display: flex; gap: 20px; }
+  .footer a:hover { color: var(--text); }
+
+  /* ── Fade animation ─────────────────────────────────────────────────────── */
+  @keyframes zenFade {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .u-fade   { animation: zenFade 0.7s ease both; }
+  .u-fade-2 { animation: zenFade 0.7s 0.08s ease both; }
+  .u-fade-3 { animation: zenFade 0.7s 0.16s ease both; }
+  .u-fade-4 { animation: zenFade 0.7s 0.24s ease both; }
+
+  /* ═══════════════════════════════════════
+     HOME PAGE — pure text list, no images
+  ═══════════════════════════════════════ */
+
+  .home-intro {
+    padding: 72px 0 56px;
+    border-bottom: 1px solid var(--border);
+  }
+  .home-intro__name {
+    font-family: var(--serif);
+    font-size: 38px;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .home-intro__bio {
+    font-size: 14.5px;
+    color: var(--text-2);
+    max-width: 440px;
+    line-height: 1.8;
+    font-weight: 300;
+  }
+
+  /* Albums as text list — no photos */
+  .albums-list {
+    padding-top: 0;
+  }
+
+  .album-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    transition: none;
+  }
+  .album-row:first-child { border-top: 1px solid var(--border); }
+
+  .album-row__num {
+    font-family: var(--serif);
+    font-size: 11px;
+    font-style: italic;
+    color: var(--text-3);
+    width: 36px;
+    flex-shrink: 0;
+    padding-top: 3px;
+  }
+
+  .album-row__title {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    flex: 1;
+    transition: font-style 0.2s;
+  }
+
+  .album-row:hover .album-row__title {
+    font-style: italic;
+  }
+
+  .album-row__count {
+    font-size: 11px;
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+    padding-right: 32px;
+  }
+
+  .album-row__date {
+    font-size: 11.5px;
+    color: var(--text-3);
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+    min-width: 64px;
+    text-align: right;
+    font-family: var(--serif);
+    font-style: italic;
+  }
+
+  /* ═══════════════════════════════════════
+     ALBUM PAGE
+  ═══════════════════════════════════════ */
+
+  .album-header {
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+
+  .album-header__eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-3);
+    margin-bottom: 16px;
+  }
+
+  .album-header__title {
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+
+  .album-header__meta {
+    display: flex;
+    gap: 28px;
+    font-size: 12px;
+    color: var(--text-3);
+    letter-spacing: 0.03em;
+  }
+
+  .album-header__desc {
+    margin-top: 16px;
+    font-size: 14.5px;
+    color: var(--text-2);
+    max-width: 480px;
+    line-height: 1.8;
+    font-weight: 300;
+  }
+
+  /* Masonry-style grid with generous column gap */
+  .photo-grid {
+    columns: 3;
+    column-gap: 6px;
+    margin-top: 6px;
+  }
+
+  .photo-item {
+    display: block;
+    cursor: zoom-in;
+    break-inside: avoid;
+    margin-bottom: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .photo-item img {
+    width: 100%;
+    display: block;
+    transition: opacity 0.25s ease;
+  }
+
+  .photo-item:hover img { opacity: 0.88; }
+
+  .photo-item__caption {
+    padding: 6px 0 2px;
+    font-size: 11px;
+    color: var(--text-3);
+    font-style: italic;
+    letter-spacing: 0.02em;
+    font-family: var(--serif);
+  }
+
+  /* ── Lightbox ─────────────────────────────────────────────────────────── */
+  .lb {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(250,250,248,0.97);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .lb--open { display: flex; }
+  .lb__img {
+    max-width: 88vw; max-height: 86vh;
+    object-fit: contain;
+  }
+  .lb__close {
+    position: absolute; top: 20px; right: 28px;
+    font-size: 18px; color: var(--text-3); cursor: pointer;
+    background: none; border: none; line-height: 1;
+    font-family: var(--serif); font-style: italic;
+    transition: color 0.15s;
+  }
+  .lb__close:hover { color: var(--text); }
+  .lb__prev, .lb__next {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    font-size: 22px; color: var(--text-3);
+    background: none; border: none; cursor: pointer; padding: 24px;
+    font-family: var(--serif);
+    transition: color 0.15s;
+  }
+  .lb__prev:hover, .lb__next:hover { color: var(--text); }
+  .lb__prev { left: 0; }
+  .lb__next { right: 0; }
+  .lb__caption {
+    position: absolute;
+    bottom: 24px; left: 50%; transform: translateX(-50%);
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+
+  /* ═══════════════════════════════════════
+     ABOUT PAGE
+  ═══════════════════════════════════════ */
+
+  .about-wrap {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 64px;
+    padding-top: 64px;
+  }
+
+  .about-photo img {
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+  }
+
+  .about-body { padding-top: 4px; }
+
+  .about-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-3);
+    margin-bottom: 18px;
+  }
+
+  .about-name {
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 400;
+    font-style: italic;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .about-bio {
+    margin-top: 28px;
+    font-size: 15px;
+    color: var(--text-2);
+    line-height: 1.85;
+    max-width: 500px;
+    font-weight: 300;
+  }
+
+  .about-social {
+    margin-top: 36px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .about-social a {
+    font-size: 12px;
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .about-social a:hover { color: var(--text); border-color: var(--text-2); }
+
+  /* Responsive ─────────────────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    :root { --pad: 28px; }
+    .photo-grid  { columns: 2; column-gap: 4px; }
+    .about-wrap  { grid-template-columns: 1fr; gap: 32px; }
+    .about-photo img { aspect-ratio: 16/9; }
+  }
+
+  @media (max-width: 600px) {
+    :root { --pad: 18px; }
+    .photo-grid  { columns: 1; }
+    .nav__links  { display: none; }
+    .home-intro__name { font-size: 28px; }
+    .album-row__title { font-size: 18px; }
+  }
+</style>
+
+<!-- ═══════════════════════════════════ HOME ═══════════════════════════════════ -->
+<template data-page="home">
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">{{site.owner.name}}</a>
+      <ul class="nav__links">
+        {{#unless (eq site.nav.homeVisible false)}}<li><a href="/">Work</a></li>{{/unless}}
+      {{#unless (eq site.nav.aboutVisible false)}}<li><a href="/about">About</a></li>{{/unless}}
+      {{#if site.nav.links}}{{#each site.nav.links}}<li><a href="{{url}}">{{label}}</a></li>{{/each}}{{/if}}
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page">
+    <div class="home-intro u-fade">
+      <h1 class="home-intro__name">{{site.owner.name}}</h1>
+      {{#if site.owner.bio}}<p class="home-intro__bio">{{site.owner.bio}}</p>{{/if}}
+    </div>
+
+    {{#if albums}}
+    <div class="albums-list u-fade-2">
+      {{#each albums}}
+      <a class="album-row" href="{{albumUrl this}}">
+        <span class="album-row__num">{{add @index 1}}</span>
+        <span class="album-row__title">{{this.title}}</span>
+        <span class="album-row__count">{{photoCount this}} photos</span>
+        <span class="album-row__date">{{formatDate this.date}}</span>
+      </a>
+      {{/each}}
+    </div>
+    {{/if}}
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <span>{{site.owner.name}}</span>
+      <div class="footer__social">
+        {{#if site.social.instagram}}<a href="https://instagram.com/{{site.social.instagram}}" target="_blank" rel="noopener">Instagram</a>{{/if}}
+        {{#if site.social.facebook}}<a href="https://facebook.com/{{site.social.facebook}}" target="_blank" rel="noopener">Facebook</a>{{/if}}
+        {{#if site.social.email}}<a href="mailto:{{site.social.email}}">Email</a>{{/if}}
+      </div>
+    </div>
+  </footer>
+  {{inject-script}}
+  {{inject-style}}
+</template>
+
+<!-- ═══════════════════════════════════ ALBUM ══════════════════════════════════ -->
+<template data-page="album">
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">{{site.owner.name}}</a>
+      <ul class="nav__links">
+        {{#unless (eq site.nav.homeVisible false)}}<li><a href="/">Work</a></li>{{/unless}}
+      {{#unless (eq site.nav.aboutVisible false)}}<li><a href="/about">About</a></li>{{/unless}}
+      {{#if site.nav.links}}{{#each site.nav.links}}<li><a href="{{url}}">{{label}}</a></li>{{/each}}{{/if}}
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page">
+    <div class="album-header u-fade">
+      <p class="album-header__eyebrow">{{formatDate album.date}}</p>
+      <h1 class="album-header__title">{{album.title}}</h1>
+      <div class="album-header__meta">
+        <span>{{photoCount album}} photographs</span>
+      </div>
+      {{#if album.description}}<p class="album-header__desc">{{album.description}}</p>{{/if}}
+    </div>
+
+    <div class="photo-grid u-fade-2" id="photo-grid">
+      {{#each album.photos}}
+      <a class="photo-item" href="{{imageUrl this}}" data-lb-index="{{@index}}">
+        <img src="{{thumbUrl this}}" alt="{{this.altText}}" loading="lazy">
+        {{#if this.caption}}<p class="photo-item__caption">{{this.caption}}</p>{{/if}}
+      </a>
+      {{/each}}
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <a href="/">← {{site.title}}</a>
+      <span>{{formatDate album.date}}</span>
+    </div>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lb" id="lb">
+    <button class="lb__close" id="lb-close">close</button>
+    <button class="lb__prev" id="lb-prev">‹</button>
+    <img class="lb__img" id="lb-img" src="" alt="">
+    <button class="lb__next" id="lb-next">›</button>
+    <span class="lb__caption" id="lb-caption"></span>
+  </div>
+
+  <script>
+  (function(){
+    var photos=[{{#each album.photos}}{full:"{{imageUrl this}}",thumb:"{{thumbUrl this}}",alt:"{{this.altText}}",cap:"{{this.caption}}"}{{#unless @last}},{{/unless}}{{/each}}];
+    var lb=document.getElementById('lb'),img=document.getElementById('lb-img'),cap=document.getElementById('lb-caption');
+    var cur=0;
+    function show(i){
+      cur=(i+photos.length)%photos.length;
+      img.src=photos[cur].full;img.alt=photos[cur].alt||'';
+      cap.textContent=photos[cur].cap||'';
+      lb.classList.add('lb--open');
+    }
+    document.querySelectorAll('.photo-item').forEach(function(el){
+      el.addEventListener('click',function(e){e.preventDefault();show(+el.dataset.lbIndex);});
+    });
+    document.getElementById('lb-close').onclick=function(){lb.classList.remove('lb--open');};
+    document.getElementById('lb-prev').onclick=function(){show(cur-1);};
+    document.getElementById('lb-next').onclick=function(){show(cur+1);};
+    lb.addEventListener('click',function(e){if(e.target===lb)lb.classList.remove('lb--open');});
+    document.addEventListener('keydown',function(e){
+      if(!lb.classList.contains('lb--open'))return;
+      if(e.key==='ArrowLeft')show(cur-1);
+      else if(e.key==='ArrowRight')show(cur+1);
+      else if(e.key==='Escape')lb.classList.remove('lb--open');
+    });
+  })();
+  </script>
+  {{inject-script}}
+  {{inject-style}}
+</template>
+
+<!-- ═══════════════════════════════════ ABOUT ══════════════════════════════════ -->
+<template data-page="about">
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">{{site.owner.name}}</a>
+      <ul class="nav__links">
+        {{#unless (eq site.nav.homeVisible false)}}<li><a href="/">Work</a></li>{{/unless}}
+      {{#unless (eq site.nav.aboutVisible false)}}<li><a href="/about">About</a></li>{{/unless}}
+      {{#if site.nav.links}}{{#each site.nav.links}}<li><a href="{{url}}">{{label}}</a></li>{{/each}}{{/if}}
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page">
+    <div class="about-wrap">
+      {{#if site.owner.avatar}}
+      <div class="about-photo u-fade">
+        <img src="{{site.owner.avatar}}" alt="{{site.owner.name}}">
+      </div>
+      {{/if}}
+      <div class="about-body u-fade-2">
+        <p class="about-eyebrow">About</p>
+        <h1 class="about-name">{{site.owner.name}}</h1>
+        {{#if site.owner.bio}}<p class="about-bio">{{site.owner.bio}}</p>{{/if}}
+        <div class="about-social">
+          {{#if site.social.instagram}}<a href="https://instagram.com/{{site.social.instagram}}" target="_blank" rel="noopener">Instagram</a>{{/if}}
+          {{#if site.social.facebook}}<a href="https://facebook.com/{{site.social.facebook}}" target="_blank" rel="noopener">Facebook</a>{{/if}}
+          {{#if site.social.email}}<a href="mailto:{{site.social.email}}">Email</a>{{/if}}
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <span>{{site.owner.name}}</span>
+    </div>
+  </footer>
+  {{inject-script}}
+  {{inject-style}}
+</template>
+
+<script data-scope="global">
+(function(){
+  var els=document.querySelectorAll('.photo-item');
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.style.opacity=1;});return;}
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){en.target.style.opacity=1;io.unobserve(en.target);}
+    });
+  },{threshold:0.05,rootMargin:'0px 0px 60px 0px'});
+  els.forEach(function(e){e.style.opacity=0;e.style.transition='opacity 0.6s ease';io.observe(e);});
+})();
+</script>

@@ -7,10 +7,15 @@ const { PORTFOLIO_SPEC_VERSION } = require('../../shared/types')
 const BUILTIN_DIR = path.join(__dirname, '../../../resources/themes')
 
 function parseMetadata(html) {
-  const name        = html.match(/@portfolio-theme\s+([\w-]+)/)?.[1] ?? null
-  const description = html.match(/@description\s+(.+)/)?.[1]?.trim() ?? ''
-  const compat      = html.match(/compatibility:\s*portfolio-spec@([\d.]+)/)?.[1] ?? null
-  return { name, description, compat }
+  const name           = html.match(/@portfolio-theme\s+([\w-]+)/)?.[1] ?? null
+  const description    = html.match(/@description\s+(.+)/)?.[1]?.trim() ?? ''
+  const compat         = html.match(/compatibility:\s*portfolio-spec@([\d.]+)/)?.[1] ?? null
+  const previewBg      = html.match(/@preview-bg\s+(#[0-9a-fA-F]{3,8})/)?.[1] ?? null
+  const previewSurface = html.match(/@preview-surface\s+(#[0-9a-fA-F]{3,8})/)?.[1] ?? null
+  const previewText    = html.match(/@preview-text\s+(#[0-9a-fA-F]{3,8})/)?.[1] ?? null
+  const previewMuted   = html.match(/@preview-muted\s+(#[0-9a-fA-F]{3,8})/)?.[1] ?? null
+  const previewFont    = html.match(/@preview-font\s+(.+)/)?.[1]?.trim() ?? null
+  return { name, description, compat, previewBg, previewSurface, previewText, previewMuted, previewFont }
 }
 
 function validate(html) {
@@ -34,14 +39,23 @@ async function listThemes() {
     if (!file.f.endsWith('.html')) continue
     const html = await fs.readFile(path.join(file.dir, file.f), 'utf-8').catch(() => '')
     const meta = parseMetadata(html)
-    themes.push({ name: meta.name ?? path.basename(file.f, '.html'), description: meta.description, file: file.f })
+    themes.push({
+      name:           meta.name ?? path.basename(file.f, '.html'),
+      description:    meta.description,
+      file:           file.f,
+      previewBg:      meta.previewBg,
+      previewSurface: meta.previewSurface,
+      previewText:    meta.previewText,
+      previewMuted:   meta.previewMuted,
+      previewFont:    meta.previewFont,
+    })
   }
   return themes
 }
 
 async function getCurrent() {
   const site = await readJson(PATHS.site, {})
-  return site.theme?.name ?? 'default'
+  return site.theme?.name ?? 'lumen'
 }
 
 async function installTheme(filePath) {

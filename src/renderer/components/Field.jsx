@@ -15,7 +15,7 @@ export default function Field({ label, hint, children, style }) {
       )}
       {children}
       {hint && (
-        <span style={{ fontSize: 11.5, color: 'var(--text-3)', lineHeight: 1.5 }}>
+        <span style={{ fontSize: 11.5, color: 'var(--text-3)', lineHeight: 1.5, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 4 }}>
           {hint}
         </span>
       )}

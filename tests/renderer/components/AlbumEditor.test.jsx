@@ -60,4 +60,90 @@ describe('AlbumEditor', () => {
     vi.advanceTimersByTime(700)
     expect(window.api.albums.update).toHaveBeenCalledWith('portraits', expect.objectContaining({ title: 'New Title' }))
   })
+
+  it('calls window.api.albums.update after date change + debounce', () => {
+    vi.useFakeTimers()
+    render(<AlbumEditor album={baseAlbum} />)
+    const dateInput = screen.getByDisplayValue('2024-06')
+    fireEvent.change(dateInput, { target: { value: '2025-01' } })
+    vi.advanceTimersByTime(700)
+    expect(window.api.albums.update).toHaveBeenCalledWith('portraits', expect.objectContaining({ date: '2025-01' }))
+  })
+
+  it('calls window.api.albums.update after description change + debounce', () => {
+    vi.useFakeTimers()
+    const album = { ...baseAlbum, description: 'Old desc' }
+    render(<AlbumEditor album={album} />)
+    const descInput = screen.getByDisplayValue('Old desc')
+    fireEvent.change(descInput, { target: { value: 'New desc' } })
+    vi.advanceTimersByTime(700)
+    expect(window.api.albums.update).toHaveBeenCalledWith('portraits', expect.objectContaining({ description: 'New desc' }))
+  })
+
+  it('calls onSaved callback after successful save', async () => {
+    vi.useFakeTimers()
+    const onSaved = vi.fn()
+    render(<AlbumEditor album={baseAlbum} onSaved={onSaved} />)
+    fireEvent.change(screen.getByDisplayValue('Portraits'), { target: { value: 'Updated' } })
+    vi.advanceTimersByTime(700)
+    await Promise.resolve() // flush async callback after await window.api.albums.update
+    expect(onSaved).toHaveBeenCalled()
+  })
+
+  it('calls onSaved after setting cover photo', async () => {
+    const album = {
+      ...baseAlbum,
+      photos: [
+        { filename: 'a.jpg', altText: '', url: 'https://cdn/a.jpg', width: 100, height: 100, order: 0 },
+        { filename: 'b.jpg', altText: '', url: 'https://cdn/b.jpg', width: 100, height: 100, order: 1 },
+      ],
+      coverPhoto: 'a.jpg',
+    }
+    const onSaved = vi.fn()
+    render(<AlbumEditor album={album} onSaved={onSaved} />)
+    const coverBtns = screen.getAllByTitle('Set as cover')
+    await userEvent.click(coverBtns[1])
+    expect(window.api.photos.setCover).toHaveBeenCalledWith('portraits', 'b.jpg')
+    expect(onSaved).toHaveBeenCalled()
+  })
+
+  it('calls onSaved after deleting a photo', async () => {
+    const album = {
+      ...baseAlbum,
+      photos: [{ filename: 'a.jpg', altText: '', url: 'https://cdn/a.jpg', width: 100, height: 100, order: 0 }],
+      coverPhoto: 'a.jpg',
+    }
+    const onSaved = vi.fn()
+    render(<AlbumEditor album={album} onSaved={onSaved} />)
+    await userEvent.click(screen.getByTitle('Delete'))
+    expect(window.api.photos.remove).toHaveBeenCalledWith('portraits', 'a.jpg')
+    expect(onSaved).toHaveBeenCalled()
+  })
+
+  it('shows confirmation bar when More options → Delete album is clicked', async () => {
+    render(<AlbumEditor album={baseAlbum} onSaved={() => {}} />)
+    await userEvent.click(screen.getByTitle('More options'))
+    await userEvent.click(screen.getByText('Delete album'))
+    expect(screen.getByText(/and all its photos/i)).toBeInTheDocument()
+    expect(screen.getByText('Delete')).toBeInTheDocument()
+    expect(screen.getByText('Cancel')).toBeInTheDocument()
+  })
+
+  it('hides confirmation bar when Cancel is clicked', async () => {
+    render(<AlbumEditor album={baseAlbum} onSaved={() => {}} />)
+    await userEvent.click(screen.getByTitle('More options'))
+    await userEvent.click(screen.getByText('Delete album'))
+    await userEvent.click(screen.getByText('Cancel'))
+    expect(screen.queryByText(/and all its photos/i)).not.toBeInTheDocument()
+  })
+
+  it('calls albums.delete and onDelete when confirmed', async () => {
+    const onDelete = vi.fn()
+    render(<AlbumEditor album={baseAlbum} onSaved={() => {}} onDelete={onDelete} />)
+    await userEvent.click(screen.getByTitle('More options'))
+    await userEvent.click(screen.getByText('Delete album'))
+    await userEvent.click(screen.getByText('Delete'))
+    expect(window.api.albums.delete).toHaveBeenCalledWith('portraits')
+    expect(onDelete).toHaveBeenCalled()
+  })
 })

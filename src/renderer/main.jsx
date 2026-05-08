@@ -4,6 +4,7 @@ import './styles/global.css'
 import Onboarding from './pages/Onboarding'
 import Editor from './pages/Editor'
 import Settings from './pages/Settings'
+import Toast from './components/Toast'
 
 function App() {
   // 'loading' | 'onboarding' | 'editor' | 'settings'
@@ -45,5 +46,6 @@ function App() {
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
+    <Toast />
   </StrictMode>
 )

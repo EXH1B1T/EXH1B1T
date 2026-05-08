@@ -9,7 +9,7 @@ const DEFAULTS = {
     social: { instagram: null, facebook: null, email: null },
     seo: { googleAnalyticsId: null, faviconUrl: null },
     customDomain: null,
-    theme: { name: 'default', options: {} },
+    theme: { name: 'lumen', options: {} },
     home: { layout: 'grid', headline: '', subhead: '', intro: '' },
     about: { portrait: null, exhibitions: [] },
     nav: { style: 'sidebar', homeVisible: true, aboutVisible: true, hiddenAlbums: [], links: [] },

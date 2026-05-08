@@ -39,8 +39,12 @@ export function makeWindowApi(overrides = {}) {
       setCover: vi.fn().mockResolvedValue({ ok: true }),
     },
     theme: {
-      list:       vi.fn().mockResolvedValue([{ name: 'default', description: 'Default theme' }]),
-      getCurrent: vi.fn().mockResolvedValue('default'),
+      list:       vi.fn().mockResolvedValue([{
+        name: 'lumen', description: 'Light editorial theme',
+        previewBg: '#f9f8f5', previewSurface: '#edeae2',
+        previewText: '#111111', previewMuted: '#d6d2c8', previewFont: 'Cormorant',
+      }]),
+      getCurrent: vi.fn().mockResolvedValue('lumen'),
       install:    vi.fn().mockResolvedValue({ ok: true, name: 'custom' }),
       apply:      vi.fn().mockResolvedValue({ ok: true }),
       delete:     vi.fn().mockResolvedValue({ ok: true }),

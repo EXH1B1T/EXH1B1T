@@ -36,9 +36,9 @@ describe('Settings', () => {
 
   it('shows Site Info content by default', async () => {
     render(<Settings onBack={() => {}} />)
-    await waitFor(() => expect(screen.getByText('Website')).toBeInTheDocument())
-    expect(screen.getByText('Owner')).toBeInTheDocument()
-    expect(screen.getByText('Social')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText('SEO & Browser Tab')).toBeInTheDocument())
+    expect(screen.getByText('Your Profile')).toBeInTheDocument()
+    expect(screen.getByText('Social Links')).toBeInTheDocument()
   })
 
   it('switches to Domain tab when clicked', async () => {
@@ -70,7 +70,7 @@ describe('Settings', () => {
 
   it('calls window.api.site.save when a field changes', async () => {
     render(<Settings onBack={() => {}} />)
-    await waitFor(() => screen.getByText('Website'))
+    await waitFor(() => screen.getByText('SEO & Browser Tab'))
     const titleInput = screen.getByDisplayValue('My Portfolio')
     vi.useFakeTimers()
     fireEvent.change(titleInput, { target: { value: 'New Title' } })
@@ -86,5 +86,42 @@ describe('Settings', () => {
     expect(screen.getByText('185.199.109.153')).toBeInTheDocument()
     expect(screen.getByText('185.199.110.153')).toBeInTheDocument()
     expect(screen.getByText('185.199.111.153')).toBeInTheDocument()
+  })
+
+  it('saves when custom domain input changes', async () => {
+    render(<Settings onBack={() => {}} />)
+    await userEvent.click(screen.getByText('Domain'))
+    await waitFor(() => screen.getByText('Custom Domain'))
+    vi.useFakeTimers()
+    const domainInput = screen.getByPlaceholderText('yourname.photo')
+    fireEvent.change(domainInput, { target: { value: 'mysite.com' } })
+    vi.advanceTimersByTime(700)
+    expect(window.api.site.save).toHaveBeenCalledWith(
+      expect.objectContaining({ customDomain: 'mysite.com' })
+    )
+  })
+
+  it('saves when Google Analytics ID changes', async () => {
+    render(<Settings onBack={() => {}} />)
+    await userEvent.click(screen.getByText('Analytics'))
+    await waitFor(() => screen.getByPlaceholderText('G-XXXXXXXXXX'))
+    vi.useFakeTimers()
+    const gaInput = screen.getByPlaceholderText('G-XXXXXXXXXX')
+    fireEvent.change(gaInput, { target: { value: 'G-ABC123456' } })
+    vi.advanceTimersByTime(700)
+    expect(window.api.site.save).toHaveBeenCalledWith(
+      expect.objectContaining({ seo: expect.objectContaining({ googleAnalyticsId: 'G-ABC123456' }) })
+    )
+  })
+
+  it('saves when site title changes', async () => {
+    render(<Settings onBack={() => {}} />)
+    await waitFor(() => screen.getByDisplayValue('My Portfolio'))
+    vi.useFakeTimers()
+    fireEvent.change(screen.getByDisplayValue('My Portfolio'), { target: { value: 'Studio X' } })
+    vi.advanceTimersByTime(700)
+    expect(window.api.site.save).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Studio X' })
+    )
   })
 })

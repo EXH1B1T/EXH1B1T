@@ -4,6 +4,23 @@ import s from './PreviewPane.module.css'
 export default function PreviewPane({ page, albumSlug, device = 'desktop', rebuildKey }) {
   const webviewRef = useRef(null)
 
+  // Prevent accidental navigation — preview is read-only.
+  // Inject a click interceptor after every page load so links do nothing.
+  useEffect(() => {
+    const wv = webviewRef.current
+    if (!wv) return
+    const injectBlocker = () => {
+      wv.executeJavaScript(`
+        document.addEventListener('click', function(e) {
+          var a = e.target.closest('a');
+          if (a) { e.preventDefault(); e.stopPropagation(); }
+        }, true);
+      `).catch(() => {})
+    }
+    wv.addEventListener('dom-ready', injectBlocker)
+    return () => wv.removeEventListener('dom-ready', injectBlocker)
+  }, [])
+
   useEffect(() => {
     let cancelled = false
     window.api?.preview.build().then(async (result) => {

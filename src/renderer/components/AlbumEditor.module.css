@@ -96,3 +96,83 @@
   color: var(--text-3);
   font-size: 12px;
 }
+
+/* Dropdown menu */
+.menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  min-width: 160px;
+  padding: 4px;
+  z-index: 100;
+}
+
+.menuItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+  color: var(--danger);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--t-fast);
+}
+.menuItem:hover { background: rgba(255, 77, 77, 0.08); }
+
+/* Inline confirm bar */
+.confirmBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 28px 14px;
+  padding: 10px 14px;
+  background: rgba(255, 77, 77, 0.06);
+  border: 1px solid rgba(255, 77, 77, 0.2);
+  border-radius: 7px;
+  font-size: 12.5px;
+  color: var(--text-2);
+  flex-shrink: 0;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.cancelBtn {
+  padding: 5px 12px;
+  font-size: 12px;
+  border-radius: 5px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-3);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.cancelBtn:hover { background: var(--bg-4); }
+.cancelBtn:disabled { opacity: 0.5; cursor: default; }
+
+.confirmDeleteBtn {
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 5px;
+  border: 1px solid var(--danger);
+  background: rgba(255, 77, 77, 0.12);
+  color: var(--danger);
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.confirmDeleteBtn:hover { background: rgba(255, 77, 77, 0.22); }
+.confirmDeleteBtn:disabled { opacity: 0.5; cursor: default; }

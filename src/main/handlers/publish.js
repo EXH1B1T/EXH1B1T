@@ -36,8 +36,9 @@ async function publishSite(sendProgress) {
     sendProgress({ step: 'images', message: 'Optimizing images...', percent: 15 })
     await processImages(albums)
 
-    // ── 3. Upload photos to GitHub Releases ───────────────────────────────
+    // ── 3. Upload photos + portrait to GitHub Releases ───────────────────
     sendProgress({ step: 'uploading', message: 'Uploading photos...', percent: 30 })
+    await uploadPortrait(octokit, user.login, repo)
     await uploadPhotos(octokit, user.login, repo, albums, sendProgress)
 
     // ── 4. Build HTML ─────────────────────────────────────────────────────
@@ -88,7 +89,7 @@ async function uploadPhotos(octokit, owner, repo, albums, sendProgress) {
   let release
 
   // Check if any photo needs uploading
-  const toUpload = albums.flatMap(a => (a.photos ?? []).filter(p => p.localPath && !p.url))
+  const toUpload = albums.flatMap(a => (a.photos ?? []).filter(needsUpload))
   if (!toUpload.length) return
 
   // Create release for this batch
@@ -107,7 +108,7 @@ async function uploadPhotos(octokit, owner, repo, albums, sendProgress) {
   let uploaded = 0
   for (const album of albums) {
     for (const photo of album.photos ?? []) {
-      if (!photo.localPath || photo.url) continue
+      if (!needsUpload(photo)) continue
       const buf = await fs.readFile(photo.localPath).catch(() => null)
       if (!buf) continue
 
@@ -120,6 +121,7 @@ async function uploadPhotos(octokit, owner, repo, albums, sendProgress) {
         headers: { 'content-type': 'image/jpeg', 'content-length': buf.length },
       })
       photo.url = asset.browser_download_url
+      photo.uploadedHash = photo.contentHash ?? null
 
       // Thumb
       if (photo.thumbLocalPath) {
@@ -144,6 +146,45 @@ async function uploadPhotos(octokit, owner, repo, albums, sendProgress) {
   }
 }
 
+async function uploadPortrait(octokit, owner, repo) {
+  const site = await readJson(PATHS.site, {})
+  const portrait = site?.about?.portrait
+  // Skip if not set or already a remote URL
+  if (!portrait || portrait.startsWith('http')) return
+
+  let buf
+  try {
+    buf = await fs.readFile(portrait)
+  } catch {
+    return // local file gone — skip silently
+  }
+
+  const ext = path.extname(portrait) || '.jpg'
+  const assetName = `portrait-${fileHash(buf)}${ext}`
+  const tag = `portrait-${Date.now()}`
+
+  const { data: release } = await octokit.repos.createRelease({
+    owner, repo, tag_name: tag,
+    name: 'Portrait',
+    body: 'Profile portrait uploaded by EXH1B1T',
+    draft: false,
+  })
+
+  const { data: asset } = await octokit.repos.uploadReleaseAsset({
+    owner, repo,
+    release_id: release.id,
+    name: assetName,
+    data: buf,
+    headers: { 'content-type': 'image/jpeg', 'content-length': buf.length },
+  })
+
+  // Persist the remote URL so future publishes skip the upload
+  await writeJson(PATHS.site, {
+    ...site,
+    about: { ...site.about, portrait: asset.browser_download_url },
+  })
+}
+
 async function writeSeoFiles(distDir, site, albums, login) {
   const base = site.customDomain ? `https://${site.customDomain}` : `https://${login}.github.io`
   const urls = ['/', '/about', ...albums.map(a => `/albums/${a.slug}`)]
@@ -160,4 +201,11 @@ ${urls.map(u => `  <url><loc>${base}${u}</loc></url>`).join('\n')}
   }
 }
 
-module.exports = { publishSite }
+function needsUpload(photo) {
+  if (!photo.localPath) return false
+  if (!photo.url) return true
+  if (photo.contentHash && photo.contentHash !== photo.uploadedHash) return true
+  return false
+}
+
+module.exports = { publishSite, needsUpload }

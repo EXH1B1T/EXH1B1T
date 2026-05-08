@@ -103,4 +103,73 @@ describe('NavEditor', () => {
     await userEvent.click(screen.getByTitle('Remove link'))
     expect(screen.queryByDisplayValue('Blog')).not.toBeInTheDocument()
   })
+
+  it('saves when custom link label changes', () => {
+    vi.useFakeTimers()
+    const site = {
+      ...baseSite,
+      nav: { ...baseSite.nav, links: [{ label: 'Blog', url: 'https://blog.me' }] },
+    }
+    render(<NavEditor site={site} albums={[]} onSave={() => {}} />)
+    fireEvent.change(screen.getByDisplayValue('Blog'), { target: { value: 'Journal' } })
+    vi.advanceTimersByTime(700)
+    expect(window.api.site.save).toHaveBeenCalledWith(
+      expect.objectContaining({
+        nav: expect.objectContaining({
+          links: expect.arrayContaining([expect.objectContaining({ label: 'Journal' })]),
+        }),
+      })
+    )
+  })
+
+  it('saves when custom link URL changes', () => {
+    vi.useFakeTimers()
+    const site = {
+      ...baseSite,
+      nav: { ...baseSite.nav, links: [{ label: 'Blog', url: 'https://blog.me' }] },
+    }
+    render(<NavEditor site={site} albums={[]} onSave={() => {}} />)
+    fireEvent.change(screen.getByDisplayValue('https://blog.me'), { target: { value: 'https://new.me' } })
+    vi.advanceTimersByTime(700)
+    expect(window.api.site.save).toHaveBeenCalledWith(
+      expect.objectContaining({
+        nav: expect.objectContaining({
+          links: expect.arrayContaining([expect.objectContaining({ url: 'https://new.me' })]),
+        }),
+      })
+    )
+  })
+
+  it('calls site.save when Home toggle is clicked', () => {
+    vi.useFakeTimers()
+    render(<NavEditor site={baseSite} albums={[]} onSave={() => {}} />)
+    const switches = screen.getAllByRole('switch')
+    fireEvent.click(switches[0]) // Home toggle
+    vi.advanceTimersByTime(700)
+    expect(window.api.site.save).toHaveBeenCalledWith(
+      expect.objectContaining({ nav: expect.objectContaining({ homeVisible: false }) })
+    )
+  })
+
+  it('calls site.save when About toggle is clicked', () => {
+    vi.useFakeTimers()
+    render(<NavEditor site={baseSite} albums={[]} onSave={() => {}} />)
+    const switches = screen.getAllByRole('switch')
+    fireEvent.click(switches[1]) // About toggle
+    vi.advanceTimersByTime(700)
+    expect(window.api.site.save).toHaveBeenCalledWith(
+      expect.objectContaining({ nav: expect.objectContaining({ aboutVisible: false }) })
+    )
+  })
+
+  it('calls albums.reorder when album order changes via drag-drop', async () => {
+    render(<NavEditor site={baseSite} albums={albums} onSave={() => {}} />)
+    // Simulate drag-drop: dragstart on first row, drop on second
+    const rows = document.querySelectorAll('[draggable]')
+    expect(rows.length).toBeGreaterThanOrEqual(2)
+    fireEvent.dragStart(rows[0], { dataTransfer: { effectAllowed: '', setData: () => {} } })
+    fireEvent.dragOver(rows[1], { dataTransfer: { dropEffect: '' } })
+    fireEvent.drop(rows[1], { dataTransfer: {} })
+    expect(window.api.albums.reorder).toHaveBeenCalled()
+  })
 })

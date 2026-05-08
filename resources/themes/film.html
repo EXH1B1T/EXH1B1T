@@ -1,0 +1,647 @@
+<!--
+  @portfolio-theme film
+  @description Analog darkroom portfolio. Warm dark brown, gold accents, contact-sheet grid.
+  @preview-bg      #1c1610
+  @preview-surface #261f16
+  @preview-text    #e8dcc8
+  @preview-muted   #3a3025
+  @preview-font    Space Mono
+  compatibility: portfolio-spec@1.4
+-->
+
+<style data-scope="global">
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #1c1610;
+    --bg-2:     #261f16;
+    --bg-3:     #2e2519;
+    --text:     #e8dcc8;
+    --text-2:   #8a7d68;
+    --text-3:   #4a4035;
+    --border:   #2e2519;
+    --gold:     #c4a96a;
+    --mono:     'Space Mono', 'Courier New', Courier, monospace;
+    --serif:    'Cormorant Garamond', 'Times New Roman', Georgia, serif;
+    --max-w:    1100px;
+    --nav-h:    56px;
+    --pad:      40px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--mono);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 12px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+
+  /* ── Navigation ─────────────────────────────────────────────────────────── */
+  .nav {
+    position: sticky; top: 0;
+    background: rgba(28,22,16,0.96);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+  }
+  .nav__inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 var(--pad);
+    height: var(--nav-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+  }
+  .nav__logo {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+  .nav__links {
+    display: flex; gap: 28px;
+    list-style: none; align-items: center;
+  }
+  .nav__links a {
+    font-size: 10px; font-weight: 400;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--text-2);
+    transition: color 0.18s;
+  }
+  .nav__links a:hover,
+  .nav__links a.is-active { color: var(--gold); }
+
+  /* ── Page shell ─────────────────────────────────────────────────────────── */
+  .page {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 var(--pad) 100px;
+  }
+
+  /* ── Footer ─────────────────────────────────────────────────────────────── */
+  .footer {
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+  }
+  .footer__inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 22px var(--pad);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    font-size: 10px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .footer__social { display: flex; gap: 20px; }
+  .footer a:hover { color: var(--gold); }
+
+  /* ── Fade animation ─────────────────────────────────────────────────────── */
+  @keyframes filmFade {
+    from { opacity: 0; filter: brightness(0.6); }
+    to   { opacity: 1; filter: brightness(1); }
+  }
+  .u-fade   { animation: filmFade 0.6s ease both; }
+  .u-fade-2 { animation: filmFade 0.6s 0.1s ease both; }
+  .u-fade-3 { animation: filmFade 0.6s 0.2s ease both; }
+  .u-fade-4 { animation: filmFade 0.6s 0.3s ease both; }
+
+  /* ═══════════════════════════════════════
+     HOME PAGE
+  ═══════════════════════════════════════ */
+
+  .home-intro {
+    padding: 56px 0 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .home-intro__label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .home-intro__name {
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+  .home-intro__bio {
+    font-size: 11.5px;
+    color: var(--text-2);
+    max-width: 420px;
+    line-height: 1.8;
+    font-family: var(--mono);
+  }
+
+  /* Contact-sheet grid — tight 1px gap */
+  .albums-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-top: 40px;
+  }
+
+  .album-card {
+    display: block;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .album-card__img-wrap {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background: var(--bg-2);
+    position: relative;
+  }
+
+  .album-card__img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(0.2) contrast(1.05);
+    transition: transform 0.5s ease, filter 0.4s ease;
+  }
+
+  .album-card:hover .album-card__img-wrap img {
+    transform: scale(1.04);
+    filter: sepia(0.05) contrast(1.1);
+  }
+
+  /* Frame counter overlay */
+  .album-card__frame {
+    position: absolute;
+    top: 8px; left: 10px;
+    font-size: 9px;
+    color: rgba(196,169,106,0.8);
+    letter-spacing: 0.1em;
+    font-family: var(--mono);
+  }
+
+  .album-card__no-img {
+    width: 100%; height: 100%;
+    background: var(--bg-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-3);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  /* Filmstrip bottom bar */
+  .album-card__strip {
+    padding: 10px 12px;
+    background: var(--bg-2);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .album-card__title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .album-card__date {
+    font-size: 9px;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+  }
+
+  /* ═══════════════════════════════════════
+     ALBUM PAGE
+  ═══════════════════════════════════════ */
+
+  .album-header {
+    padding: 48px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+
+  .album-header__label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+
+  .album-header__title {
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .album-header__meta {
+    display: flex;
+    gap: 24px;
+    font-size: 10px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .album-header__desc {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--text-2);
+    max-width: 480px;
+    line-height: 1.8;
+  }
+
+  /* Photo grid — contact-sheet 1px gap, natural aspect ratios */
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-top: 1px;
+  }
+
+  .photo-item {
+    display: block;
+    cursor: zoom-in;
+    background: var(--bg-2);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .photo-item__img-wrap {
+    aspect-ratio: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .photo-item__img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(0.15) contrast(1.05);
+    transition: filter 0.3s ease;
+  }
+
+  .photo-item:hover .photo-item__img-wrap img {
+    filter: sepia(0) contrast(1.1);
+  }
+
+  /* Frame number */
+  .photo-item__num {
+    position: absolute;
+    bottom: 6px; right: 8px;
+    font-size: 8px;
+    color: rgba(196,169,106,0.7);
+    letter-spacing: 0.08em;
+    font-family: var(--mono);
+  }
+
+  /* ── Lightbox ─────────────────────────────────────────────────────────── */
+  .lb {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10,8,5,0.98);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .lb--open { display: flex; }
+  .lb__img {
+    max-width: 88vw; max-height: 88vh;
+    object-fit: contain;
+    filter: sepia(0.1) contrast(1.05);
+  }
+  .lb__close {
+    position: absolute; top: 20px; right: 24px;
+    font-size: 20px; color: var(--gold); cursor: pointer;
+    background: none; border: none; line-height: 1;
+    font-family: var(--mono);
+  }
+  .lb__prev, .lb__next {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    font-size: 18px; color: var(--text-3);
+    background: none; border: none; cursor: pointer; padding: 20px;
+    font-family: var(--mono);
+    transition: color 0.15s;
+  }
+  .lb__prev:hover, .lb__next:hover { color: var(--gold); }
+  .lb__prev { left: 0; }
+  .lb__next { right: 0; }
+  .lb__caption {
+    position: absolute;
+    bottom: 20px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; color: var(--text-3);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    font-family: var(--mono);
+  }
+
+  /* ═══════════════════════════════════════
+     ABOUT PAGE
+  ═══════════════════════════════════════ */
+
+  .about-wrap {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 56px;
+    padding-top: 56px;
+  }
+
+  .about-photo img {
+    width: 100%;
+    aspect-ratio: 2/3;
+    object-fit: cover;
+    filter: sepia(0.2) contrast(1.1);
+  }
+
+  .about-body { padding-top: 4px; }
+
+  .about-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .about-name {
+    font-family: var(--serif);
+    font-size: 30px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .about-bio {
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.9;
+    max-width: 520px;
+  }
+
+  .about-social {
+    margin-top: 32px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .about-social a {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+    border-bottom: 1px solid var(--text-3);
+    padding-bottom: 2px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .about-social a:hover { color: var(--gold); border-color: var(--gold); }
+
+  /* Responsive ─────────────────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    :root { --pad: 24px; }
+    .albums-grid { grid-template-columns: repeat(2, 1fr); }
+    .photo-grid  { grid-template-columns: repeat(3, 1fr); }
+    .about-wrap  { grid-template-columns: 1fr; gap: 28px; }
+    .about-photo img { aspect-ratio: 16/9; }
+  }
+
+  @media (max-width: 600px) {
+    :root { --pad: 16px; }
+    .albums-grid { grid-template-columns: 1fr; }
+    .photo-grid  { grid-template-columns: repeat(2, 1fr); }
+    .nav__links  { display: none; }
+  }
+</style>
+
+<!-- ═══════════════════════════════════ HOME ═══════════════════════════════════ -->
+<template data-page="home">
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">{{site.owner.name}}</a>
+      <ul class="nav__links">
+        {{#unless (eq site.nav.homeVisible false)}}<li><a href="/">Work</a></li>{{/unless}}
+      {{#unless (eq site.nav.aboutVisible false)}}<li><a href="/about">About</a></li>{{/unless}}
+      {{#if site.nav.links}}{{#each site.nav.links}}<li><a href="{{url}}">{{label}}</a></li>{{/each}}{{/if}}
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page">
+    <div class="home-intro u-fade">
+      <p class="home-intro__label">Portfolio</p>
+      <h1 class="home-intro__name">{{site.owner.name}}</h1>
+      {{#if site.owner.bio}}<p class="home-intro__bio">{{site.owner.bio}}</p>{{/if}}
+    </div>
+
+    {{#if albums}}
+    <div class="albums-grid u-fade-2">
+      {{#each albums}}
+      <a class="album-card" href="{{albumUrl this}}">
+        <div class="album-card__img-wrap">
+          <span class="album-card__frame">{{add @index 1}}</span>
+          {{#if (coverUrl this)}}
+          <img src="{{coverUrl this}}" alt="{{this.title}}" loading="lazy">
+          {{else}}
+          <div class="album-card__no-img">NO EXPOSURE</div>
+          {{/if}}
+        </div>
+        <div class="album-card__strip">
+          <span class="album-card__title">{{this.title}}</span>
+          <span class="album-card__date">{{formatDate this.date}}</span>
+        </div>
+      </a>
+      {{/each}}
+    </div>
+    {{/if}}
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <span>© {{site.owner.name}}</span>
+      <div class="footer__social">
+        {{#if site.social.instagram}}<a href="https://instagram.com/{{site.social.instagram}}" target="_blank" rel="noopener">Instagram</a>{{/if}}
+        {{#if site.social.facebook}}<a href="https://facebook.com/{{site.social.facebook}}" target="_blank" rel="noopener">Facebook</a>{{/if}}
+        {{#if site.social.email}}<a href="mailto:{{site.social.email}}">Email</a>{{/if}}
+      </div>
+    </div>
+  </footer>
+  {{inject-script}}
+  {{inject-style}}
+</template>
+
+<!-- ═══════════════════════════════════ ALBUM ══════════════════════════════════ -->
+<template data-page="album">
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">{{site.owner.name}}</a>
+      <ul class="nav__links">
+        {{#unless (eq site.nav.homeVisible false)}}<li><a href="/">Work</a></li>{{/unless}}
+      {{#unless (eq site.nav.aboutVisible false)}}<li><a href="/about">About</a></li>{{/unless}}
+      {{#if site.nav.links}}{{#each site.nav.links}}<li><a href="{{url}}">{{label}}</a></li>{{/each}}{{/if}}
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page">
+    <div class="album-header u-fade">
+      <p class="album-header__label">Roll</p>
+      <h1 class="album-header__title">{{album.title}}</h1>
+      <div class="album-header__meta">
+        <span>{{formatDate album.date}}</span>
+        <span>{{photoCount album}} frames</span>
+      </div>
+      {{#if album.description}}<p class="album-header__desc">{{album.description}}</p>{{/if}}
+    </div>
+
+    <div class="photo-grid u-fade-2" id="photo-grid">
+      {{#each album.photos}}
+      <a class="photo-item" href="{{imageUrl this}}" data-lb-index="{{@index}}">
+        <div class="photo-item__img-wrap">
+          <img src="{{thumbUrl this}}" alt="{{this.altText}}" loading="lazy">
+          <span class="photo-item__num">{{add @index 1}}</span>
+        </div>
+      </a>
+      {{/each}}
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <a href="/">← {{site.title}}</a>
+      <span>{{formatDate album.date}}</span>
+    </div>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lb" id="lb">
+    <button class="lb__close" id="lb-close">✕</button>
+    <button class="lb__prev" id="lb-prev">‹</button>
+    <img class="lb__img" id="lb-img" src="" alt="">
+    <button class="lb__next" id="lb-next">›</button>
+    <span class="lb__caption" id="lb-caption"></span>
+  </div>
+
+  <script>
+  (function(){
+    var photos=[{{#each album.photos}}{full:"{{imageUrl this}}",thumb:"{{thumbUrl this}}",alt:"{{this.altText}}",cap:"{{this.caption}}"}{{#unless @last}},{{/unless}}{{/each}}];
+    var lb=document.getElementById('lb'),img=document.getElementById('lb-img'),cap=document.getElementById('lb-caption');
+    var cur=0;
+    function show(i){
+      cur=(i+photos.length)%photos.length;
+      img.src=photos[cur].full;img.alt=photos[cur].alt||'';
+      cap.textContent=photos[cur].cap||(cur+1)+' / '+photos.length;
+      lb.classList.add('lb--open');
+    }
+    document.querySelectorAll('.photo-item').forEach(function(el){
+      el.addEventListener('click',function(e){e.preventDefault();show(+el.dataset.lbIndex);});
+    });
+    document.getElementById('lb-close').onclick=function(){lb.classList.remove('lb--open');};
+    document.getElementById('lb-prev').onclick=function(){show(cur-1);};
+    document.getElementById('lb-next').onclick=function(){show(cur+1);};
+    lb.addEventListener('click',function(e){if(e.target===lb)lb.classList.remove('lb--open');});
+    document.addEventListener('keydown',function(e){
+      if(!lb.classList.contains('lb--open'))return;
+      if(e.key==='ArrowLeft')show(cur-1);
+      else if(e.key==='ArrowRight')show(cur+1);
+      else if(e.key==='Escape')lb.classList.remove('lb--open');
+    });
+  })();
+  </script>
+  {{inject-script}}
+  {{inject-style}}
+</template>
+
+<!-- ═══════════════════════════════════ ABOUT ══════════════════════════════════ -->
+<template data-page="about">
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">{{site.owner.name}}</a>
+      <ul class="nav__links">
+        {{#unless (eq site.nav.homeVisible false)}}<li><a href="/">Work</a></li>{{/unless}}
+      {{#unless (eq site.nav.aboutVisible false)}}<li><a href="/about">About</a></li>{{/unless}}
+      {{#if site.nav.links}}{{#each site.nav.links}}<li><a href="{{url}}">{{label}}</a></li>{{/each}}{{/if}}
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page">
+    <div class="about-wrap">
+      {{#if site.owner.avatar}}
+      <div class="about-photo u-fade">
+        <img src="{{site.owner.avatar}}" alt="{{site.owner.name}}">
+      </div>
+      {{/if}}
+      <div class="about-body u-fade-2">
+        <p class="about-label">Photographer</p>
+        <h1 class="about-name">{{site.owner.name}}</h1>
+        {{#if site.owner.bio}}<p class="about-bio">{{site.owner.bio}}</p>{{/if}}
+        <div class="about-social">
+          {{#if site.social.instagram}}<a href="https://instagram.com/{{site.social.instagram}}" target="_blank" rel="noopener">Instagram</a>{{/if}}
+          {{#if site.social.facebook}}<a href="https://facebook.com/{{site.social.facebook}}" target="_blank" rel="noopener">Facebook</a>{{/if}}
+          {{#if site.social.email}}<a href="mailto:{{site.social.email}}">Email</a>{{/if}}
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <span>© {{site.owner.name}}</span>
+    </div>
+  </footer>
+  {{inject-script}}
+  {{inject-style}}
+</template>
+
+<script data-scope="global">
+(function(){
+  var els=document.querySelectorAll('.album-card,.photo-item');
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.style.opacity=1;});return;}
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){en.target.style.opacity=1;io.unobserve(en.target);}
+    });
+  },{threshold:0.05});
+  els.forEach(function(e){e.style.opacity=0;e.style.transition='opacity 0.5s ease';io.observe(e);});
+})();
+</script>

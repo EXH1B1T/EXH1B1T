@@ -9,10 +9,14 @@ beforeEach(() => {
   installWindowApi({
     theme: {
       list: vi.fn().mockResolvedValue([
-        { name: 'default', description: 'Clean default theme' },
-        { name: 'minimal', description: 'Ultra minimal' },
+        { name: 'lumen', description: 'Light editorial theme',
+          previewBg: '#f9f8f5', previewSurface: '#edeae2',
+          previewText: '#111111', previewMuted: '#d6d2c8', previewFont: 'Cormorant' },
+        { name: 'noir', description: 'Dark cinematic theme',
+          previewBg: '#0c0c0c', previewSurface: '#141414',
+          previewText: '#ede9e1', previewMuted: '#252521', previewFont: 'Cormorant' },
       ]),
-      getCurrent: vi.fn().mockResolvedValue('default'),
+      getCurrent: vi.fn().mockResolvedValue('lumen'),
       install:    vi.fn().mockResolvedValue({ ok: true, name: 'new-theme' }),
       apply:      vi.fn().mockResolvedValue({ ok: true }),
       delete:     vi.fn().mockResolvedValue({ ok: true }),
@@ -23,14 +27,14 @@ beforeEach(() => {
 describe('ThemePicker', () => {
   it('renders theme list after loading', async () => {
     render(<ThemePicker />)
-    await waitFor(() => expect(screen.getByText('default')).toBeInTheDocument())
-    expect(screen.getByText('minimal')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText('lumen')).toBeInTheDocument())
+    expect(screen.getByText('noir')).toBeInTheDocument()
   })
 
   it('shows description for each theme', async () => {
     render(<ThemePicker />)
-    await waitFor(() => expect(screen.getByText('Clean default theme')).toBeInTheDocument())
-    expect(screen.getByText('Ultra minimal')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText('Light editorial theme')).toBeInTheDocument())
+    expect(screen.getByText('Dark cinematic theme')).toBeInTheDocument()
   })
 
   it('shows "IN USE" badge on the active theme', async () => {
@@ -47,7 +51,7 @@ describe('ThemePicker', () => {
     render(<ThemePicker />)
     await waitFor(() => screen.getByText('Use'))
     await userEvent.click(screen.getByText('Use'))
-    expect(window.api.theme.apply).toHaveBeenCalledWith('minimal')
+    expect(window.api.theme.apply).toHaveBeenCalledWith('noir')
   })
 
   it('changes active theme after applying', async () => {

@@ -11,11 +11,38 @@ const { TEST_DIR } = vi.hoisted(() => {
   return { TEST_DIR: dir }
 })
 
-import { getUrl } from '../../src/main/handlers/preview.js'
-import { PATHS } from '../../src/main/storage.js'
+import { buildPreview, getUrl } from '../../src/main/handlers/preview.js'
+import { PATHS, writeJson } from '../../src/main/storage.js'
 
-beforeAll(async () => { await fs.mkdir(TEST_DIR, { recursive: true }) })
+beforeAll(async () => {
+  await fs.mkdir(TEST_DIR, { recursive: true })
+  await fs.mkdir(path.dirname(PATHS.site), { recursive: true })
+  await fs.mkdir(PATHS.albums, { recursive: true })
+  await fs.mkdir(PATHS.previewDir, { recursive: true })
+})
 afterAll(async () => { await fs.rm(TEST_DIR, { recursive: true, force: true }) })
+
+// ── buildPreview ──────────────────────────────────────────────────────────────
+
+describe('buildPreview', () => {
+  it('returns { ok: true } and writes index.html to previewDir', async () => {
+    await writeJson(PATHS.site, {
+      title: 'Test', lang: 'en',
+      owner: { name: 'Test' }, social: {}, theme: { name: 'lumen', options: {} },
+      home: { layout: 'grid', headline: '', subhead: '', intro: '' },
+      about: { portrait: null, exhibitions: [] },
+      nav: { style: 'sidebar', homeVisible: true, aboutVisible: true, hiddenAlbums: [], links: [] },
+    })
+    const result = await buildPreview()
+    expect(result.ok).toBe(true)
+    await expect(fs.access(path.join(PATHS.previewDir, 'index.html'))).resolves.toBeUndefined()
+  })
+
+  it('writes about.html to previewDir', async () => {
+    await buildPreview()
+    await expect(fs.access(path.join(PATHS.previewDir, 'about.html'))).resolves.toBeUndefined()
+  })
+})
 
 // ── getUrl ────────────────────────────────────────────────────────────────────
 

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import s from './HomeEditor.module.css'
 import Field from './Field'
 import Icon from './Icon'
+import { showToast } from './Toast'
 
 const LAYOUTS = [
   { key: 'grid', label: 'Grid', desc: 'Albums displayed in a photo grid' },
@@ -26,9 +27,14 @@ export default function HomeEditor({ site, albums, onSave }) {
     clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
       const next = { ...site, home: { ...site?.home, ...update } }
-      await window.api?.site.save(next)
-      onSave?.(next, immediate)
-      setSaving(false)
+      try {
+        await window.api?.site.save(next)
+        onSave?.(next, immediate)
+      } catch {
+        showToast('Failed to save changes. Please try again.', 'error')
+      } finally {
+        setSaving(false)
+      }
     }, 600)
   }, [site, onSave])
 
@@ -51,7 +57,9 @@ export default function HomeEditor({ site, albums, onSave }) {
     setItems(next)
     setDragIdx(null)
     setOverIdx(null)
-    await window.api?.albums.reorder(next.map((a) => a.slug))
+    await window.api?.albums.reorder(next.map((a) => a.slug)).catch(() => {
+      showToast('Failed to save album order.', 'error')
+    })
   }
   const handleDragEnd = () => { setDragIdx(null); setOverIdx(null) }
 
