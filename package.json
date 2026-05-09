@@ -2,6 +2,7 @@
   "name": "exh1b1t",
   "version": "1.0.0",
   "description": "Create a free photo portfolio hosted on GitHub Pages",
+  "author": "EXH1B1T",
   "main": "src/main/index.js",
   "scripts": {
     "dev": "concurrently \"vite\" \"electron .\"",
@@ -56,9 +57,6 @@
       "icon": "build/icon.png",
       "target": "AppImage",
       "category": "Graphics"
-    },
-    "scripts": {
-      "postinstall": "node scripts/generate-icons.js"
     },
     "publish": {
       "provider": "github",
