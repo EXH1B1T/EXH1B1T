@@ -38,11 +38,15 @@
     "productName": "EXH1B1T",
     "icon": "build/icon",
     "files": [
-      "dist/**/*",
+      "dist/renderer/**/*",
       "src/main/**/*",
       "src/shared/**/*",
       "resources/**/*",
       "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/sharp/**",
+      "node_modules/@img/**"
     ],
     "mac": {
       "category": "public.app-category.photography",
